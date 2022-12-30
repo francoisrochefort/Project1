@@ -1,6 +1,5 @@
 package com.example.handshack
 
-import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -25,36 +24,12 @@ import com.example.handshack.ui.theme.HandshackTheme
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltAndroidApp
-class HandshakeApp: Application()
-
-@Module
-@InstallIn(SingletonComponent::class)
-class AppModule {
-
-    @Provides
-    fun provideUsbApi(
-        @ApplicationContext context: Context
-    ) = UsbApi().also { it.connect(context) }
-
-    @Provides
-    fun provideMcRepository(usbApi: UsbApi) : McRepository = McRepositoryImpl(usbApi)
-}
+private const val TAG = "there is no spoon"
 
 class UsbApi {
 
@@ -112,28 +87,28 @@ class UsbApi {
     }
 }
 
-interface McRepository {
+object Mc {
 
     sealed class Event {
         data class OnNewData(val data: String) : Event()
         data class OnRunError(val error: Exception?) : Event()
     }
 
-    val events: Flow<Event>
-    fun sendMsg(msg: String)
-}
+    private lateinit var usbApi: UsbApi
 
-class McRepositoryImpl(private val usbApi: UsbApi) : McRepository {
+    fun connect(context: Context) {
+        usbApi = UsbApi()
+        usbApi.connect(context)
+    }
 
-    override val events: Flow<McRepository.Event> by lazy {
+    val events: Flow<Event> by lazy {
         callbackFlow {
             val callback = object : SerialInputOutputManager.Listener {
                 override fun onNewData(data: ByteArray?) {
-                    trySend(McRepository.Event.OnNewData(data.toString()))
+                    trySend(Event.OnNewData(String(data!!)))
                 }
-
                 override fun onRunError(e: Exception?) {
-                    trySend(McRepository.Event.OnRunError(e))
+                    trySend(Event.OnRunError(e))
                 }
             }
             usbApi.register(callback)
@@ -143,25 +118,22 @@ class McRepositoryImpl(private val usbApi: UsbApi) : McRepository {
         }
     }
 
-    override fun sendMsg(msg: String) {
+    fun sendMsg(msg: String) {
         usbApi.write(msg)
     }
 }
 
-@HiltViewModel
-class MainViewModel @Inject constructor(
-    private val mcRepository: McRepository
-) : ViewModel() {
+class MainViewModel : ViewModel() {
 
     var msg by mutableStateOf("")
     private set
 
     init {
         viewModelScope.launch {
-            mcRepository.events.collect {
+            Mc.events.collect {
                 when(it) {
-                    is McRepository.Event.OnNewData -> Log.d("francois", it.data)
-                    is McRepository.Event.OnRunError -> Unit
+                    is Mc.Event.OnNewData -> Log.d(TAG, it.data)
+                    is Mc.Event.OnRunError -> Unit
                 }
             }
         }
@@ -171,7 +143,7 @@ class MainViewModel @Inject constructor(
         msg = value
     }
     fun onSendMsgClick() {
-        mcRepository.sendMsg(msg)
+        Mc.sendMsg(msg)
     }
 }
 
@@ -200,10 +172,10 @@ fun MainScreen() {
     }
 }
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Mc.connect(applicationContext)
         setContent {
             HandshackTheme {
                 Surface(
