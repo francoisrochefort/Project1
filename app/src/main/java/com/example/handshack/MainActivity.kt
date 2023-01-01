@@ -9,11 +9,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,11 +24,30 @@ import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 private const val TAG = "there is no spoon"
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Connect to the MC
+        Mc.connect(applicationContext)
+
+        setContent {
+            HandshackTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    MainScreen()
+                }
+            }
+        }
+    }
+}
 
 class UsbApi {
 
@@ -125,14 +143,41 @@ object Mc {
 
 class MainViewModel : ViewModel() {
 
-    var msg by mutableStateOf("")
-    private set
+    var msg by mutableStateOf("<listAll>")
+        private set
+
+    var listFlow = listAll()
+        private set
+
+    // SharedFlow used to signal the Flow when a list is available
+    private val events = MutableSharedFlow<List<String>>(replay = 0)
+
+    private fun listAll() : Flow<List<String>> {
+
+        // Command the MC to send the list
+        Mc.sendMsg("<listAll>")
+
+        return flow {
+
+            // Wait for the SharedFlow to signal when the list is available
+            events.collect { list ->
+                emit(list)
+            }
+        }
+    }
 
     init {
+
+        // Collect events from the MC
         viewModelScope.launch {
-            Mc.events.collect {
-                when(it) {
-                    is Mc.Event.OnNewData -> Log.d(TAG, it.data)
+            Mc.events.collect { event ->
+                when(event) {
+                    is Mc.Event.OnNewData -> {
+
+                        // Signal the Flow that the list is available
+                        this@MainViewModel.events.emit(event.data.split(","))
+                        Log.d(TAG, event.data)
+                    }
                     is Mc.Event.OnRunError -> Unit
                 }
             }
@@ -149,7 +194,10 @@ class MainViewModel : ViewModel() {
 
 @Composable
 fun MainScreen() {
+
     val viewModel = viewModel<MainViewModel>()
+    val list = viewModel.listFlow.collectAsState(initial = emptyList())
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,6 +205,8 @@ fun MainScreen() {
             .fillMaxSize()
             .padding(all = 16.dp)
     ) {
+
+        // Show a text field and a button the send commands
         OutlinedTextField(
             value = viewModel.msg,
             onValueChange = viewModel::onMsgChange,
@@ -169,21 +219,18 @@ fun MainScreen() {
         Button(onClick = viewModel::onSendMsgClick) {
             Text(text = "Send Msg")
         }
-    }
-}
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Mc.connect(applicationContext)
-        setContent {
-            HandshackTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    MainScreen()
-                }
+        // Show the content if the list
+        Spacer(modifier = Modifier.height(16.dp))
+        LazyColumn(modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth()
+        ) {
+            items(items = list.value) { item ->
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = item
+                )
             }
         }
     }
