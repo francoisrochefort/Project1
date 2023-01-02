@@ -1,3 +1,4 @@
+
 package com.example.handshack
 
 import android.app.PendingIntent
@@ -17,15 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.handshack.ui.theme.HandshackTheme
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 private const val TAG = "there is no spoon"
 
@@ -105,7 +105,53 @@ class UsbApi {
     }
 }
 
+//
+// Implementation of a Bucket class
+//
+data class Bucket(val name: String)
+
+//
+// Implementation of the MC class
+//
 object Mc {
+
+    //
+    // Implementation of a BucketDao class
+    //
+    class BucketDao {
+
+        private val events = MutableSharedFlow<List<Bucket>>(replay = 0)
+
+        init {
+
+            // Collect incoming events from the MC
+            val scope = CoroutineScope(Dispatchers.IO)
+            scope.launch {
+                Mc.events.collect { event ->
+                    when(event) {
+                        is Event.OnNewData -> {
+
+                            // Signal the Flow that the list is available
+                            val names = event.data.split(",")
+                            val list = emptyList<Bucket>().toMutableList()
+                            for (name in names) list.add(Bucket(name = name))
+                            events.emit(list)
+                        }
+                        is Event.OnRunError -> Unit
+                    }
+                }
+            }
+        }
+
+        fun listAll() : Flow<List<Bucket>> {
+            sendMsg("<BucketDao::listAll>")
+            return flow {
+                events.collect { list ->
+                    emit(list)
+                }
+            }
+        }
+    }
 
     sealed class Event {
         data class OnNewData(val data: String) : Event()
@@ -113,13 +159,7 @@ object Mc {
     }
 
     private lateinit var usbApi: UsbApi
-
-    fun connect(context: Context) {
-        usbApi = UsbApi()
-        usbApi.connect(context)
-    }
-
-    val events: Flow<Event> by lazy {
+    private val events: Flow<Event> by lazy {
         callbackFlow {
             val callback = object : SerialInputOutputManager.Listener {
                 override fun onNewData(data: ByteArray?) {
@@ -136,53 +176,40 @@ object Mc {
         }
     }
 
+    val bucketDao = BucketDao()
+
+    fun connect(context: Context) {
+        usbApi = UsbApi()
+        usbApi.connect(context)
+    }
     fun sendMsg(msg: String) {
         usbApi.write(msg)
     }
+
 }
 
+//
+// Implementation of the BucketRepository class
+//
+class BucketRepository{
+
+    private val dao: Mc.BucketDao = Mc.bucketDao
+
+    fun listAll() = dao.listAll()
+}
+
+//
+// Implementation of the MainViewModel class
+//
 class MainViewModel : ViewModel() {
 
-    var msg by mutableStateOf("<listAll>")
+    private val repo = BucketRepository()
+
+    var msg by mutableStateOf("<BucketDao::listAll>")
         private set
 
-    var listFlow = listAll()
+    var listFlow = repo.listAll()
         private set
-
-    // SharedFlow used to signal the Flow when a list is available
-    private val events = MutableSharedFlow<List<String>>(replay = 0)
-
-    private fun listAll() : Flow<List<String>> {
-
-        // Command the MC to send the list
-        Mc.sendMsg("<listAll>")
-
-        return flow {
-
-            // Wait for the SharedFlow to signal when the list is available
-            events.collect { list ->
-                emit(list)
-            }
-        }
-    }
-
-    init {
-
-        // Collect events from the MC
-        viewModelScope.launch {
-            Mc.events.collect { event ->
-                when(event) {
-                    is Mc.Event.OnNewData -> {
-
-                        // Signal the Flow that the list is available
-                        this@MainViewModel.events.emit(event.data.split(","))
-                        Log.d(TAG, event.data)
-                    }
-                    is Mc.Event.OnRunError -> Unit
-                }
-            }
-        }
-    }
 
     fun onMsgChange(value: String) {
         msg = value
@@ -192,6 +219,9 @@ class MainViewModel : ViewModel() {
     }
 }
 
+//
+// Implementation of the MainScreen composable
+//
 @Composable
 fun MainScreen() {
 
@@ -229,7 +259,7 @@ fun MainScreen() {
             items(items = list.value) { item ->
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = item
+                    text = item.name
                 )
             }
         }

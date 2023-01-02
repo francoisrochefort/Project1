@@ -13,22 +13,22 @@ void loop() {
   if (cb) {
     Serial.readStringUntil('<');
     String cmd = Serial.readStringUntil('>');
-    if (cmd == "listAll") {
+    if (cmd == "BucketDao::listAll") {
 
       int i = 0;
       while(1) {
         delay(1000);
         Serial.print(
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++) + String(",") + 
-          String(i++)
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++) + String(",") + 
+          String("Bucket #") + String(i++)
         );
       }
 
