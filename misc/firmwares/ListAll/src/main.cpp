@@ -11,14 +11,14 @@ void loop() {
 
   int cb = Serial.available();
   if (cb) {
-    Serial.readStringUntil('<');
-    String cmd = Serial.readStringUntil('>');
-    if (cmd == "BucketDao::listAll") {
-
+    Serial.readStringUntil('{');
+    String cmd = Serial.readStringUntil('}');
+    if (cmd == "listBuckets()") {
       int i = 0;
       while(1) {
-        delay(1000);
+        delay(500);
         Serial.print(
+          String("{onBucketList([") +
           String("Bucket #") + String(i++) + String(",") + 
           String("Bucket #") + String(i++) + String(",") + 
           String("Bucket #") + String(i++) + String(",") + 
@@ -28,10 +28,11 @@ void loop() {
           String("Bucket #") + String(i++) + String(",") + 
           String("Bucket #") + String(i++) + String(",") + 
           String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++)
+          String("Bucket #") + String(i++) +
+          String("])}")
         );
       }
-
     }
+    Serial.print(cmd);
   }
 }
