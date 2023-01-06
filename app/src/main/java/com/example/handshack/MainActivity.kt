@@ -48,6 +48,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// ================================================================
+// Implementation of an USB class
+// ================================================================
 class UsbApi {
 
     class NoUsbDriverFound : Exception()
@@ -104,19 +107,19 @@ class UsbApi {
     }
 }
 
-//
+// ================================================================
 // Implementation of a Bucket class
-//
+// ================================================================
 data class Bucket(val name: String)
 
-//
+// ================================================================
 // Implementation of the MC class
-//
+// ================================================================
 object Mc {
 
-    //
+    // ================================================================
     // Implementation of a BucketDao class
-    //
+    // ================================================================
     class BucketDao {
 
         private val events = MutableSharedFlow<List<Bucket>>(replay = 0)
@@ -187,9 +190,9 @@ object Mc {
 
 }
 
-//
+// ================================================================
 // Implementation of the BucketRepository class
-//
+// ================================================================
 class BucketRepository{
 
     private val dao: Mc.BucketDao = Mc.bucketDao
@@ -197,9 +200,9 @@ class BucketRepository{
     fun listAll() = dao.listAll()
 }
 
-//
+// ================================================================
 // Implementation of the MainViewModel class
-//
+// ================================================================
 class MainViewModel : ViewModel() {
 
     private val repo = BucketRepository()
@@ -218,9 +221,9 @@ class MainViewModel : ViewModel() {
     }
 }
 
-//
+// ================================================================
 // Implementation of the MainScreen composable
-//
+// ================================================================
 @Composable
 fun MainScreen() {
 
