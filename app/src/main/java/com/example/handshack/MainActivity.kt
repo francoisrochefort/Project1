@@ -26,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlin.math.exp
 
 private const val TAG = "there is no spoon"
 
@@ -43,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    // Show the main screen
                     MainScreen()
                 }
             }
@@ -131,8 +131,13 @@ object Mc : SerialInputOutputManager.Listener {
     }
 
     fun listBuckets(): Flow<List<Bucket>> {
+
+        // Query the list from the MC
         sendMsg("{listBuckets()}")
+
         return flow {
+
+            // Wait for onBucketList to broadcast the list
             events.collect { list ->
                 emit(list)
             }
@@ -145,19 +150,28 @@ object Mc : SerialInputOutputManager.Listener {
 
     override fun onNewData(data: ByteArray?) {
         data?.let {
+
+            // Append the new data to the buffer
             buffer += String(it)
-            val startCurly = buffer.indexOf('{')
-            val endCurly = buffer.indexOf('}', startCurly + 1)
-            if (endCurly != -1) {
-                val expr = buffer.subSequence(startCurly + 1, endCurly)
+
+            // Check if the sent event is complete
+            val leftCurly = buffer.indexOf('{')
+            val rightCurly = buffer.indexOf('}', leftCurly + 1)
+            if (rightCurly != -1) {
+                val expr = buffer.subSequence(leftCurly + 1, rightCurly)
+
+                // Parse event parameters
                 val leftParenthesis = expr.indexOf('(')
                 val rightParenthesis = expr.indexOf(')', leftParenthesis + 1)
-                val cmd = expr.subSequence(0, leftParenthesis)
                 val params = expr.subSequence(leftParenthesis + 1, rightParenthesis) as String
-                when(cmd) {
+
+                // Parse the event name
+                when(expr.subSequence(0, leftParenthesis)) {
                     "onBucketList" -> onBucketList(params)
                 }
-                buffer = buffer.subSequence(endCurly, buffer.lastIndex) as String
+
+                // Remove parsed text from the buffer
+                buffer = buffer.subSequence(rightCurly, buffer.lastIndex) as String
             }
         }
     }
@@ -167,11 +181,17 @@ object Mc : SerialInputOutputManager.Listener {
     }
 
     private fun onBucketList(params: String) {
+
+        // Parse the name array parameter
         val leftBracket = params.indexOf('[')
         val rightBracket = params.indexOf(']')
         val names = params.subSequence(leftBracket + 1, rightBracket).split(',')
+
+        // Convert the name array to a bucket list
         val list = emptyList<Bucket>().toMutableList()
         for (name in names) list.add(Bucket(name = name))
+
+        // Broadcast the list to subscribers
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
             events.emit(list)
