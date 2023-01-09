@@ -13,19 +13,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.handshack.ui.theme.HandshackTheme
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 private const val TAG = "there is no spoon"
 
@@ -43,11 +45,18 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     // Show the main screen
-                    MainScreen()
+                    BucketsScreen()
                 }
             }
         }
     }
+}
+
+// ================================================================
+// ViewModel events
+// ================================================================
+sealed class ViewModelEvents {
+    object OnDismiss : ViewModelEvents()
 }
 
 // ================================================================
@@ -112,15 +121,20 @@ class UsbApi {
 // ================================================================
 // Implementation of a Bucket class
 // ================================================================
-data class Bucket(val name: String)
+data class Bucket(var name: String)
 
 // ================================================================
 // Implementation of the MC class
 // ================================================================
 object Mc : SerialInputOutputManager.Listener {
 
+    sealed class Events {
+        data class OnBucketList(val buckets: List<Bucket>) : Events()
+        data class OnNewBucket(val bucketId: Int) : Events()
+    }
+
     private lateinit var usbApi: UsbApi
-    private val events = MutableSharedFlow<List<Bucket>>(replay = 0)
+    private val events = MutableSharedFlow<Events>(replay = 0)
 
     var buffer: String = ""
 
@@ -138,10 +152,19 @@ object Mc : SerialInputOutputManager.Listener {
         return flow {
 
             // Wait for onBucketList to broadcast the list
-            events.collect { list ->
-                emit(list)
+            events.collect { event ->
+                when(event) {
+                    is Events.OnBucketList -> emit(event.buckets)
+                    else -> Unit
+                }
             }
         }
+    }
+
+    suspend fun add(bucket: Bucket) : Int {
+
+        // Send the command to the MC
+        sendMsg("{addBucket(\"${bucket.name}\")}")
     }
 
     private fun sendMsg(msg: String) {
@@ -160,23 +183,23 @@ object Mc : SerialInputOutputManager.Listener {
             if (rightCurly != -1) {
                 val expr = buffer.subSequence(leftCurly + 1, rightCurly)
 
-                // Parse event parameters
+                // Parse the event parameters
                 val leftParenthesis = expr.indexOf('(')
                 val rightParenthesis = expr.indexOf(')', leftParenthesis + 1)
                 val params = expr.subSequence(leftParenthesis + 1, rightParenthesis) as String
 
                 // Parse the event name
-                when(expr.subSequence(0, leftParenthesis)) {
+                when (expr.subSequence(0, leftParenthesis)) {
                     "onBucketList" -> onBucketList(params)
                 }
 
-                // Remove parsed text from the buffer
+                // Remove the parsed text from the buffer
                 buffer = buffer.subSequence(rightCurly, buffer.lastIndex) as String
             }
         }
     }
 
-    override fun onRunError(e: java.lang.Exception?) {
+    override fun onRunError(e: Exception?) {
         Log.d(TAG, "onRunError(e=$e)")
     }
 
@@ -194,7 +217,7 @@ object Mc : SerialInputOutputManager.Listener {
         // Broadcast the list to subscribers
         val scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
-            events.emit(list)
+            events.emit(Events.OnBucketList(list))
         }
     }
 }
@@ -202,38 +225,115 @@ object Mc : SerialInputOutputManager.Listener {
 // ================================================================
 // Implementation of the BucketRepository class
 // ================================================================
-class BucketRepository {
+class BucketsRepository {
     fun listAll() = Mc.listBuckets()
+    suspend fun add(bucket: Bucket) = Mc.add(bucket = bucket)
 }
 
 // ================================================================
-// Implementation of the MainViewModel class
+// Implementation of the BucketsViewModel class
 // ================================================================
-class MainViewModel : ViewModel() {
-    private val repo = BucketRepository()
-    var listFlow = repo.listAll()
+class BucketsViewModel : ViewModel() {
+    private val repo = BucketsRepository()
+
+    private val _events = Channel<ViewModelEvents>()
+    val events = _events.receiveAsFlow()
+
+    var buckets = repo.listAll()
         private set
+
+    var name by mutableStateOf("")
+        private set
+    fun onNameChange(name: String) {
+        this.name = name
+    }
+    fun onSubmitClick() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val id = repo.add(Bucket(name = name))
+            _events.send(ViewModelEvents.OnDismiss)
+        }
+    }
 }
 
 // ================================================================
-// Implementation of the MainScreen composable
+// Implementation of the BucketsScreen composable
 // ================================================================
 @Composable
-fun MainScreen() {
-    val viewModel = viewModel<MainViewModel>()
-    val list = viewModel.listFlow.collectAsState(initial = emptyList())
-    LazyColumn(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+fun BucketsScreen() {
+
+    // Local variables
+    val viewModel = viewModel<BucketsViewModel>()
+    val buckets by viewModel.buckets.collectAsState(initial = emptyList())
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
+    // Collect events from the ViewModel
+    LaunchedEffect(key1 = true) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ViewModelEvents.OnDismiss -> showDialog = false
+            }
+        }
+    }
+
+    // Composes the content of the screen
+    Column(
         modifier = Modifier
-            .padding(all = 16.dp)
             .fillMaxSize()
+            .padding(all = 16.dp)
     ) {
-        items(items = list.value) { item ->
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = item.name
-            )
+        // Bucket list
+        LazyColumn(
+            modifier = Modifier.weight(1f)
+        ) {
+            items(items = buckets) { bucket ->
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = bucket.name
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Compose the command bar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = { showDialog = true }
+            ) {
+                Text(text = "Add..")
+            }
+        }
+
+        // Compose the bucket dialog
+        if (showDialog) {
+            Dialog(
+                onDismissRequest = { showDialog = false }
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    // Name field
+                    OutlinedTextField(
+                        value = viewModel.name,
+                        onValueChange = viewModel::onNameChange,
+                        label = {
+                            Text(text = "Name")
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Submit button
+                    Button(
+                        onClick = viewModel::onSubmitClick
+                    ) {
+                        Text(text = "Submit")
+                    }
+                }
+            }
         }
     }
 }
