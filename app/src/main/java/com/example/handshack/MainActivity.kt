@@ -136,7 +136,7 @@ object Mc : SerialInputOutputManager.Listener {
     private lateinit var usbApi: UsbApi
     private val events = MutableSharedFlow<Events>(replay = 0)
 
-    var buffer: String = ""
+    private var buffer: String = ""
 
     fun connect(context: Context) {
         usbApi = UsbApi()
@@ -161,7 +161,7 @@ object Mc : SerialInputOutputManager.Listener {
         }
     }
 
-    suspend fun add(bucket: Bucket) : Int {
+    fun add(bucket: Bucket) {
 
         // Send the command to the MC
         sendMsg("{addBucket(\"${bucket.name}\")}")
@@ -227,7 +227,7 @@ object Mc : SerialInputOutputManager.Listener {
 // ================================================================
 class BucketsRepository {
     fun listAll() = Mc.listBuckets()
-    suspend fun add(bucket: Bucket) = Mc.add(bucket = bucket)
+    fun add(bucket: Bucket) = Mc.add(bucket = bucket)
 }
 
 // ================================================================
@@ -249,7 +249,7 @@ class BucketsViewModel : ViewModel() {
     }
     fun onSubmitClick() {
         viewModelScope.launch(Dispatchers.IO) {
-            val id = repo.add(Bucket(name = name))
+            repo.add(Bucket(name = name))
             _events.send(ViewModelEvents.OnDismiss)
         }
     }

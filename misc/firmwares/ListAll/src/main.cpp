@@ -1,38 +1,30 @@
-#include <Arduino.h>
+#include <mc.h>
 
-#define BAUD_RATE 115200
+#define DROP_DATABASE
 
-void setup() {
-  Serial.begin(BAUD_RATE);
-  while(!Serial);
+Db db;
+Context context;
+
+void setup()
+{
+    // Init. serial port
+    Serial.begin(BAUD_RATE);
+    while (!Serial);
+
+    // Mount the file system
+    if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
+        Serial.printf("<%s%s>", Event::ON_ERROR, "Failed to mount file system");
+        return;
+    }
+
+    // Open the database
+    #ifdef DROP_DATABASE
+    SPIFFS.remove("/scale.db");
+    #endif
+    db.open();
 }
 
-void loop() {
-
-  int cb = Serial.available();
-  if (cb) {
-    Serial.readStringUntil('{');
-    String cmd = Serial.readStringUntil('}');
-    if (cmd == "listBuckets()") {
-      int i = 0;
-      while(1) {
-        delay(500);
-        Serial.print(
-          String("{onBucketList([") +
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) + String(",") + 
-          String("Bucket #") + String(i++) +
-          String("])}")
-        );
-      }
-    }
-    Serial.print(cmd);
-  }
+void loop()
+{
+    context.doEvents();
 }
