@@ -42,13 +42,23 @@ void loop()
 
 // handle diagnostic informations given by assertion and abort program execution:
 void __assert(const char *__func, const char *__file, int __lineno, const char *__sexp) {
-    // transmit diagnostic informations through serial link. 
+    
+    // Transmit diagnostic informations through serial link 
     // Serial.println(__func);
     // Serial.println(__file);
     // Serial.println(__lineno, DEC);
     // Serial.println(__sexp);
     // Serial.flush();
-    android.onError("MC assertion failed");
-    // abort program execution.
+
+    // Send the event
+    // String msg = 
+    //     String("MC debug assertion failed at:") + String("\n") +
+    //     String(__func) + String("\n") + 
+    //     String(__file) + String("\n") + 
+    //     String(__lineno) + String("\n") + 
+    //     String(__sexp) + String("\n"); 
+    // android.onError(msg);
+
+    // Abort program execution
     abort();
 }

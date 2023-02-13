@@ -4,12 +4,12 @@
 // Apis
 boolean Android::isMessagePending() { return Serial.available(); }
 
-Message Android::getMessage()
+Android::Message Android::getMessage()
 {
     // Read the message
     Serial.readStringUntil('<');
     String msg = Serial.readStringUntil('>');
-    return Message(msg);
+    return Android::Message(msg);
 }
 
 // Events

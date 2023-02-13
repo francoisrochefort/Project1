@@ -101,17 +101,6 @@ enum class Cmd {
     SelectBucket
 };
 
-class Message {
-    String cmd;
-    String val;
-    int nextChar;
-public:
-    Message(const String& msg);
-    Cmd getCmd();
-    String getNextStringParam();
-    int getNextIntParam();
-};
-
 class Android {
 
     // Messages
@@ -124,8 +113,6 @@ class Android {
     static constexpr const char* ON_CREATE_DATABASE = "EV98";
     static constexpr const char* ON_ERROR           = "EV99";
 
-public:
-
     // Commands
     static constexpr const char* AWAKE         = "CM01";
     static constexpr const char* ADD_BUCKET    = "CM02";
@@ -134,6 +121,19 @@ public:
     static constexpr const char* COPY_BUCKET   = "CM05";
     static constexpr const char* SELECT_BUCKET = "CM06";
 
+public:
+
+    // Message
+    class Message {
+        String cmd;
+        String val;
+        int nextChar;
+    public:
+        Message(const String& msg);
+        Cmd getCmd();
+        String getNextStringParam();
+        int getNextIntParam();
+    };
 
     // Apis
     boolean isMessagePending();
@@ -149,6 +149,13 @@ public:
     void onError(const String& msg);
     void onError(const char* msg);
 };
+
+// Debug macro
+#define debug(msg, __e) \
+    if (!__e) { \
+        android.onError(msg); \
+        assert(__e); \
+    }  
 
 // Global variables
 extern Db db;

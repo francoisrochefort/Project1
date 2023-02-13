@@ -10,7 +10,7 @@ void AsleepState::doEvents()
     if (android.isMessagePending()) {
 
         // Read and dispatch the message
-        Message msg = android.getMessage();
+        Android::Message msg = android.getMessage();
         switch (msg.getCmd()) {
 
         case Cmd::Awake:

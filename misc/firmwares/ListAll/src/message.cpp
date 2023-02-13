@@ -1,14 +1,14 @@
 
 #include <mc.h>
 
-Message::Message(const String& msg)
+Android::Message::Message(const String& msg)
 {
     cmd = msg.substring(0, 4);
     val = msg.substring(4);
     nextChar = 0;
 }
 
-Cmd Message::getCmd()
+Cmd Android::Message::getCmd()
 {
     if (cmd == Android::AWAKE) return Cmd::Awake;
     else if (cmd == Android::ADD_BUCKET) return Cmd::AddBucket;
@@ -19,7 +19,7 @@ Cmd Message::getCmd()
     else return Cmd::Undefined;
 }
 
-String Message::getNextStringParam()
+String Android::Message::getNextStringParam()
 {
     int period = nextChar;
     for(; val[period] != 0 && val[period] != ','; period++);
@@ -28,7 +28,7 @@ String Message::getNextStringParam()
     return param;
 }   
 
-int Message::getNextIntParam()
+int Android::Message::getNextIntParam()
 {
     return getNextStringParam().toInt();
 }
