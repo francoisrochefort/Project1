@@ -7,17 +7,16 @@ void AwakeState::setContext(Context* context)
 
 void AwakeState::doEvents() 
 {
-    // Any pending message?
     if (android.isMessagePending()) {
 
         // Read and dispatch the message
         Message msg = android.getMessage();
         switch (msg.getCmd()) {
-            
+
         case Cmd::AddBucket:
             {
                 // Insert the new bucket
-                String name = msg.getNextParam();
+                String name = msg.getNextStringParam();
                 Bucket bucket(name);
                 BucketRepository repo;
                 int bucketId = repo.addBucket(bucket);
@@ -29,8 +28,8 @@ void AwakeState::doEvents()
         case Cmd::UpdateBucket:
             {
                 // Update the bucket
-                int bucketId = msg.getNextParam().toInt();
-                String name =  msg.getNextParam();
+                int bucketId = msg.getNextIntParam();
+                String name =  msg.getNextStringParam();
 
                 // Send the event
                 android.onUpdateBucket(bucketId);
@@ -39,7 +38,7 @@ void AwakeState::doEvents()
         case Cmd::DeleteBucket:
             {
                 // Delete the bucket
-                int bucketId = msg.getNextParam().toInt();
+                int bucketId = msg.getNextIntParam();
 
                 // Send the event
                 android.onDeleteBucket(bucketId);
@@ -48,7 +47,7 @@ void AwakeState::doEvents()
         case Cmd::CopyBucket:
             {
                 // Copy the bucket
-                int src =  msg.getNextParam().toInt();
+                int src =  msg.getNextIntParam();
                 int dest = 2;
 
                 // Send the event

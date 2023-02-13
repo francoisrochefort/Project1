@@ -108,7 +108,8 @@ class Message {
 public:
     Message(const String& msg);
     Cmd getCmd();
-    String getNextParam();
+    String getNextStringParam();
+    int getNextIntParam();
 };
 
 class Android {

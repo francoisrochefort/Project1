@@ -5,6 +5,7 @@ Message::Message(const String& msg)
 {
     cmd = msg.substring(0, 4);
     val = msg.substring(4);
+    nextChar = 0;
 }
 
 Cmd Message::getCmd()
@@ -18,11 +19,16 @@ Cmd Message::getCmd()
     else return Cmd::Undefined;
 }
 
-String Message::getNextParam()
+String Message::getNextStringParam()
 {
     int period = nextChar;
     for(; val[period] != 0 && val[period] != ','; period++);
-    String param = val.substring(0, period);
+    String param = val.substring(nextChar, period);
     nextChar = ++period;
     return param;
 }   
+
+int Message::getNextIntParam()
+{
+    return getNextStringParam().toInt();
+}
