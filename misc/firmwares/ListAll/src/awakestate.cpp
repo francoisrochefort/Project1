@@ -8,30 +8,24 @@ void AwakeState::setContext(Context* context)
 void AwakeState::doEvents() 
 {
     // Any pending message?
-    int cb = Serial.available();
-    if (cb) {
-
-        // Read the message
-        Serial.readStringUntil('<');
-        String str = Serial.readStringUntil('>');
-
-        // Parse the message
-        String cmd = str.substring(0, 4);
-        String val = str.substring(4);
+    if (android.getMessage()) {
 
         // Dispatch the message
-        if (cmd == Command::ADD_BUCKET) {
+        String cmd = android.getCmd();
+        if (cmd == Android::ADD_BUCKET) {
 
             // Insert the new bucket
-            String name = val;
-            uint8_t bucketId = 1;
+            BucketRepository repo;
+            Bucket bucket(android.getVal());
+            int bucketId = repo.addBucket(bucket);
 
             // Send the event
-            Serial.printf("<%s%i>", Event::ON_ADD_BUCKET, bucketId);
+            android.onAddBucket(bucketId);
 
-        } else if (cmd == Command::UPDATE_BUCKET) {
+        } else if (cmd == Android::UPDATE_BUCKET) {
 
             // Split the val parameter
+            String val = android.getVal();
             int period = 0;
             for(; val[period] != 0 && val[period] != ','; period++);
             String bucketId = val.substring(0, period);
@@ -41,24 +35,26 @@ void AwakeState::doEvents()
     
 
             // Send the event
-            Serial.printf("<%s%i>", Event::ON_UPDATE_BUCKET, bucketId);
+            android.onUpdateBucket(bucketId.toInt());
 
-        } else if (cmd == Command::DELETE_BUCKET) {
+        } else if (cmd == Android::DELETE_BUCKET) {
 
             // Delete the bucket
-            uint8_t bucketId = val.toInt();
+            String val = android.getVal();
+            int bucketId = val.toInt();
 
             // Send the event
-            Serial.printf("<%s%i>", Event::ON_DELETE_BUCKET, bucketId);
+            android.onDeleteBucket(bucketId);
 
-        } else if (cmd == Command::COPY_BUCKET) {
+        } else if (cmd == Android::COPY_BUCKET) {
             
             // Copy the bucket
-            uint8_t src = val.toInt();
-            uint8_t dest = 2;
+            String val = android.getVal();
+            int src = val.toInt();
+            int dest = 2;
 
             // Send the event
-            Serial.printf("<%s%i>", Event::ON_COPY_BUCKET, dest);
+            android.onCopyBucket(dest);
         }
     }
 }

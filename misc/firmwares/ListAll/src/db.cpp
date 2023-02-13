@@ -5,20 +5,16 @@ Db::Db() : db(nullptr)
 {
 }
 
-boolean Db::open() 
+boolean Db::open(boolean init) 
 {
-    // Check if it is the first time
-    boolean exists = SPIFFS.exists("/scale.db");
-
     // Open the SQLite3 database
-    sqlite3_initialize();
     if (sqlite3_open("/spiffs/scale.db", &db)) {
-        Serial.printf("<%s%s>", Event::ON_ERROR, sqlite3_errmsg(db));
+        android.onError(sqlite3_errmsg(db));
         return false;
     }
 
     // Create tables if they don't exist
-    if (!exists) {
+    if (init) {
         return create();
     }
     return true;
@@ -36,12 +32,13 @@ boolean Db::create()
     char* errMsg = nullptr;
     int rc = sqlite3_exec(db, sql, nullptr, nullptr, &errMsg);
     if (rc!= SQLITE_OK) {
-        Serial.printf("<%s%s>", Event::ON_ERROR, errMsg);
+        android.onError(errMsg);
+        sqlite3_free(errMsg);
         return false;
     }
 
     // Send the event
-    Serial.printf("<%s>", Event::ON_CREATE_DATABASE);
+    android.onCreateDatabase();
     return true;
 }
 
@@ -58,8 +55,38 @@ bool Db::addBucket(const Bucket& bucket)
     char* errMsg = nullptr;
     int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);
     if (rc!= SQLITE_OK) {
-        Serial.printf("<%s%s>", Event::ON_ERROR, errMsg);
+        android.onError(errMsg);
+        sqlite3_free(errMsg);
         return false;
     }
     return true;    
+}
+
+Db::BucketExistsCmd::BucketExistsCmd(sqlite3* db) : db(db)
+{
+}
+
+int Db::BucketExistsCmd::callback(void *data, int argc, char **argv, char **azColName)
+{
+    *((boolean*)data) = true;
+    return 0;
+}
+
+boolean Db::BucketExistsCmd::run(const String& name)
+{
+    const String sql = String("\
+        SELECT * \
+        FROM buckets \
+        WHERE name = '" + name + "'\
+        ");
+    boolean exists = false;
+    int rc = sqlite3_exec(db, sql.c_str(), callback, &exists, NULL);
+    assert(rc == SQLITE_OK);
+    return exists;
+}
+
+bool Db::isBucketName(const String& name)
+{
+    BucketExistsCmd cmd(db);
+    return cmd.run(name);
 }

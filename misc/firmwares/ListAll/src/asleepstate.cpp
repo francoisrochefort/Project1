@@ -8,25 +8,17 @@ void AsleepState::setContext(Context* context)
 void AsleepState::doEvents() 
 {
     // Any pending message?
-    int cb = Serial.available();
-    if (cb) {
-
-        // Read the message
-        Serial.readStringUntil('<');
-        String str = Serial.readStringUntil('>');
-
-        // Parse the message
-        String cmd = str.substring(0, 4);
-        String val = str.substring(4);
+    if (android.getMessage()) {
 
         // Dispatch the message
-        if (cmd == Command::AWAKE) {
+        String cmd = android.getCmd();
+        if (cmd == Android::AWAKE) {
 
             // Transition to awake state
             currentContext->setState(new AwakeState());
 
             // Send the event
-            Serial.printf("<%s>", Event::ON_AWAKE);
+            android.onAwake();
         }
     }
 }
