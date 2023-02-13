@@ -7,18 +7,25 @@ void AsleepState::setContext(Context* context)
 
 void AsleepState::doEvents() 
 {
-    // Any pending message?
-    if (android.getMessage()) {
+    if (android.isMessagePending()) {
 
-        // Dispatch the message
-        String cmd = android.getCmd();
-        if (cmd == Android::AWAKE) {
+        // Read and dispatch the message
+        Message msg = android.getMessage();
+        switch (msg.getCmd()) {
 
-            // Transition to awake state
-            currentContext->setState(new AwakeState());
+        case Cmd::Awake:
+            {
+                // Transition to awake state
+                currentContext->setState(new AwakeState());
 
-            // Send the event
-            android.onAwake();
+                // Send the event
+                android.onAwake();
+            }
+            break;
+        default:
+            {
+            }
+            break;
         }
     }
 }

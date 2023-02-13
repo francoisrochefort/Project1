@@ -20,6 +20,7 @@ class AsleepState;
 class Db;
 class Bucket;
 class BucketRepository;
+class Message;
 class Android;
 
 // Machine state
@@ -90,6 +91,26 @@ public:
     // int copyBucket(const int bucketId, const String& name);    
 };
 
+enum class Cmd {
+    Undefined,
+    Awake,
+    AddBucket,
+    UpdateBucket,
+    DeleteBucket,
+    CopyBucket,
+    SelectBucket
+};
+
+class Message {
+    String cmd;
+    String val;
+    int nextChar;
+public:
+    Message(const String& msg);
+    Cmd getCmd();
+    String getNextParam();
+};
+
 class Android {
 
     // Messages
@@ -101,10 +122,6 @@ class Android {
     static constexpr const char* ON_SELECT_BUCKET   = "EV06";
     static constexpr const char* ON_CREATE_DATABASE = "EV98";
     static constexpr const char* ON_ERROR           = "EV99";
-
-    // Variables
-    String cmd;
-    String val;
 
 public:
 
@@ -118,9 +135,8 @@ public:
 
 
     // Apis
-    boolean getMessage();
-    String getCmd();
-    String getVal();
+    boolean isMessagePending();
+    Message getMessage();
 
     // Events
     void onAwake();

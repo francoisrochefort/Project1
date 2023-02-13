@@ -2,28 +2,15 @@
 #include <mc.h>
 
 // Apis
-boolean Android::getMessage()
+boolean Android::isMessagePending() { return Serial.available(); }
+
+Message Android::getMessage()
 {
-    // Any pending message?
-    int cb = Serial.available();
-    if (cb) {
-
-        // Read the message
-        Serial.readStringUntil('<');
-        String msg = Serial.readStringUntil('>');
-
-        // Parse the message
-        cmd = msg.substring(0, 4);
-        val = msg.substring(4);
-
-        return true;
-    }
-    return false;
+    // Read the message
+    Serial.readStringUntil('<');
+    String msg = Serial.readStringUntil('>');
+    return Message(msg);
 }
-
-// Getters
-String Android::getCmd() { return cmd; }
-String Android::getVal() { return val; }
 
 // Events
 void Android::onAwake() { Serial.printf("<%s>", ON_AWAKE); }
