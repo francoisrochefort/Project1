@@ -1,10 +1,20 @@
 
 #include <mc.h>
 
-Bucket::Bucket()
+Bucket::Bucket(const int id, char* name) : id(id), name(String(name))
 {
 }
 
-Bucket::Bucket(const String& name) : name(name)
+int Bucket::getId()
+{
+    return id;
+}
+
+String Bucket::getName() 
+{
+    return name;
+}
+
+Bucket::~Bucket() 
 {
 }

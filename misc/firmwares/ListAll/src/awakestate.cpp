@@ -1,5 +1,12 @@
 #include <mc.h>
 
+int AwakeState::callback(Bucket* bucket) {
+
+    // Send each bucket one by one to android
+    android.onNextBucket(bucket);
+    return 0;
+}
+
 void AwakeState::setContext(Context* context) 
 {
     currentContext = context;
@@ -16,42 +23,67 @@ void AwakeState::doEvents()
         case Cmd::AddBucket:
             {
                 // Insert the new bucket
-                String name = msg.getNextStringParam();
-                Bucket bucket(name);
+                String name = msg.getStringParam();
                 BucketRepository repo;
-                int bucketId = repo.addBucket(bucket);
+                int id = repo.addBucket(name);
+                if(id == -1) {
+
+                    // Throw an error if the bucket exists
+                    android.onError("Bucket name already exists");
+                    break;
+                }
 
                 // Send the event
-                android.onAddBucket(bucketId);
+                android.onAddBucket(id);
             }
             break;
         case Cmd::UpdateBucket:
             {
                 // Update the bucket
-                int bucketId = msg.getNextIntParam();
-                String name =  msg.getNextStringParam();
+                int id = msg.getIntParam();
+                String name =  msg.getStringParam();
+                BucketRepository repo;
+                if (!repo.updateBucket(id, name)) {
+
+                    // Throw an error if the bucket exists
+                    android.onError("Bucket with the same name exists or the specified bucket does not exists");
+                    break;
+                }
 
                 // Send the event
-                android.onUpdateBucket(bucketId);
+                android.onUpdateBucket(id);
             }
             break;
         case Cmd::DeleteBucket:
             {
                 // Delete the bucket
-                int bucketId = msg.getNextIntParam();
+                int id = msg.getIntParam();
+                BucketRepository repo;
+                if (!repo.deleteBucket(id)) {
+
+                    // Throw an error if the bucket does not exists
+                    android.onError("Bucket does not exists");
+                    break;
+                }
 
                 // Send the event
-                android.onDeleteBucket(bucketId);
+                android.onDeleteBucket(id);
             }
             break;
         case Cmd::CopyBucket:
             {
                 // Copy the bucket
-                int src =  msg.getNextIntParam();
+                int src =  msg.getIntParam();
                 int dest = 2;
 
                 // Send the event
                 android.onCopyBucket(dest);
+            }
+            break;
+        case Cmd::ListBuckets:
+            {
+                BucketRepository repo;
+                repo.listAll(callback);
             }
             break;
         default:

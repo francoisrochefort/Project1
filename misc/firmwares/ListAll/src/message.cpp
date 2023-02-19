@@ -16,10 +16,11 @@ Cmd Android::Message::getCmd()
     else if (cmd == Android::DELETE_BUCKET) return Cmd::DeleteBucket;
     else if (cmd == Android::COPY_BUCKET) return Cmd::CopyBucket;
     else if (cmd == Android::SELECT_BUCKET) return Cmd::SelectBucket;
+    else if (cmd == Android::LIST_BUCKETS) return Cmd::ListBuckets;
     else return Cmd::Undefined;
 }
 
-String Android::Message::getNextStringParam()
+String Android::Message::getStringParam()
 {
     int period = nextChar;
     for(; val[period] != 0 && val[period] != ','; period++);
@@ -28,7 +29,7 @@ String Android::Message::getNextStringParam()
     return param;
 }   
 
-int Android::Message::getNextIntParam()
+int Android::Message::getIntParam()
 {
-    return getNextStringParam().toInt();
+    return getStringParam().toInt();
 }

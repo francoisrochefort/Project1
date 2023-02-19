@@ -23,6 +23,8 @@ class BucketRepository;
 class Message;
 class Android;
 
+typedef int (*LISTBUCKETSCALLBACK)(Bucket* bucket);
+
 // Machine state
 class State
 {
@@ -43,6 +45,7 @@ public:
 class AwakeState : public State 
 {
     Context* currentContext;
+    static int callback(Bucket* bucket);
 public:
     virtual void setContext(Context* context);
     virtual void doEvents();
@@ -59,36 +62,70 @@ public:
 class Db {
     sqlite3* db;
 
+    // SQL command helpers
+    class GetNextBucketIdCmd {
+        sqlite3* db;
+        static int callback(void* data, int argc, char** argv, char** azColName);
+    public:
+        GetNextBucketIdCmd(sqlite3* db);
+        int run();
+    };
+
+    class GetBucketIdCmd {
+        sqlite3* db;
+        static int callback(void* data, int argc, char** argv, char** azColName);
+    public:
+        GetBucketIdCmd(sqlite3* db);
+        int run(const String& name);
+    };
+
     class BucketExistsCmd {
         sqlite3* db;
-        static int callback(void *data, int argc, char **argv, char **azColName);
+        static int callback(void* data, int argc, char** argv, char** azColName);
     public:
         BucketExistsCmd(sqlite3* db);
-        boolean run(const String& name);
+        boolean run(const int id);
+    };
+
+    class ListBucketsCmd {
+        sqlite3* db;
+        static int callback(void* data, int argc, char** argv, char** azColName);
+    public:
+        ListBucketsCmd(sqlite3* db);
+        void run(LISTBUCKETSCALLBACK callback);
     };
 
 public:
     Db();
-    boolean open(boolean init); 
-    bool create();
-    bool isBucketName(const String& name);
-    bool addBucket(const Bucket& bucket);
+    void open(boolean createDatabase); 
+    void createDatabase();
+    int getNextBucketId();
+    void addBucket(const int id, const String& name);
+    int getBucketId(const String& name);
+    void updateBucket(const int id, const String& name);
+    boolean bucketExists(const int id);
+    void deleteBucket(const int id);
+    void listAll(LISTBUCKETSCALLBACK callback);
 };
 
 class Bucket {
-public:
     int id;
     String name;
-    Bucket(const String& name);
-    Bucket();
+public:
+    Bucket(const int id, char* name);
+    int getId();
+    String getName();
+    virtual ~Bucket();
 };
 
 class BucketRepository {
+
 public:
-    int addBucket(const Bucket& bucket);
-    // void updateBucket(const Bucket& bucket);
-    // void deleteBucket(const int bucketId);
-    // int copyBucket(const int bucketId, const String& name);    
+    int addBucket(const String& name);
+    boolean updateBucket(const int id, const String& name);
+    boolean deleteBucket(const int id);
+    // int copyBucket(const int bucketId, const String& name);
+    void listAll(LISTBUCKETSCALLBACK callback);
 };
 
 enum class Cmd {
@@ -98,7 +135,8 @@ enum class Cmd {
     UpdateBucket,
     DeleteBucket,
     CopyBucket,
-    SelectBucket
+    SelectBucket,
+    ListBuckets
 };
 
 class Android {
@@ -110,6 +148,7 @@ class Android {
     static constexpr const char* ON_DELETE_BUCKET   = "EV04";
     static constexpr const char* ON_COPY_BUCKET     = "EV05";
     static constexpr const char* ON_SELECT_BUCKET   = "EV06";
+    static constexpr const char* ON_NEXT_BUCKET     = "EV07";
     static constexpr const char* ON_CREATE_DATABASE = "EV98";
     static constexpr const char* ON_ERROR           = "EV99";
 
@@ -120,6 +159,7 @@ class Android {
     static constexpr const char* DELETE_BUCKET = "CM04";
     static constexpr const char* COPY_BUCKET   = "CM05";
     static constexpr const char* SELECT_BUCKET = "CM06";
+    static constexpr const char* LIST_BUCKETS  = "CM07";
 
 public:
 
@@ -131,8 +171,8 @@ public:
     public:
         Message(const String& msg);
         Cmd getCmd();
-        String getNextStringParam();
-        int getNextIntParam();
+        String getStringParam();
+        int getIntParam();
     };
 
     // Apis
@@ -145,13 +185,14 @@ public:
     void onUpdateBucket(int bucketId);
     void onDeleteBucket(int bucketId);
     void onCopyBucket(int bucketId);
+    void onNextBucket(Bucket* Bucket);
     void onCreateDatabase();
     void onError(const String& msg);
     void onError(const char* msg);
 };
 
 // Debug macro
-#define debug(msg, __e) \
+#define ASSERT( __e, msg) \
     if (!__e) { \
         android.onError(msg); \
         assert(__e); \
