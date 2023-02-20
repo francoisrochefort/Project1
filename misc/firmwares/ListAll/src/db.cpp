@@ -180,21 +180,21 @@ int Db::getBucketId(const String& name)
 
 int Db::getNextVal(Seq seq)
 {
+    // Select the sequence and increment it 
     const String sql = String("\
         SELECT val FROM sequences WHERE seq = ") + seq + String(";\
         UPDATE sequences SET val = val + 1 WHERE seq = ") + seq + String(";");
     char* errMsg = NULL;
-    int nextVal = 0;
-    int rc = sqlite3_exec(db, sql.c_str(), 
-        [](void* data, int argc, char** argv, char** azColName)
+    int val = 0;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
         {
-            // Convert the nextVal to an integer and return it
+            // Convert the val to an integer and return it
             *((int*)data) = String(argv[0]).toInt();
             return 0;
         }, 
-        &nextVal, &errMsg);
+        &val, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
-    return nextVal;
+    return val;
 }
 
 void Db::updateBucket(const int id, const String& name)
