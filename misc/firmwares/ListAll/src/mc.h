@@ -45,7 +45,6 @@ public:
 class AwakeState : public State 
 {
     Context* currentContext;
-    static int callback(Bucket* bucket);
 public:
     virtual void setContext(Context* context);
     virtual void doEvents();
@@ -59,18 +58,14 @@ public:
     void doEvents();
 };
 
+enum Seq {
+    BucketId = 1
+};
+
 class Db {
     sqlite3* db;
 
     // SQL command helpers
-    class GetNextBucketIdCmd {
-        sqlite3* db;
-        static int callback(void* data, int argc, char** argv, char** azColName);
-    public:
-        GetNextBucketIdCmd(sqlite3* db);
-        int run();
-    };
-
     class GetBucketIdCmd {
         sqlite3* db;
         static int callback(void* data, int argc, char** argv, char** azColName);
@@ -99,13 +94,16 @@ public:
     Db();
     void open(boolean createDatabase); 
     void createDatabase();
-    int getNextBucketId();
+
+    int getNextVal(Seq seq);
+
     void addBucket(const int id, const String& name);
     int getBucketId(const String& name);
     void updateBucket(const int id, const String& name);
     boolean bucketExists(const int id);
     void deleteBucket(const int id);
-    void listAll(LISTBUCKETSCALLBACK callback);
+    void listBuckets(LISTBUCKETSCALLBACK callback);
+
 };
 
 class Bucket {
@@ -116,6 +114,11 @@ public:
     int getId();
     String getName();
     virtual ~Bucket();
+};
+
+class SequenceRepository {
+public:
+    int getNextVal(Seq seq);
 };
 
 class BucketRepository {

@@ -13,34 +13,6 @@
 #include <mc.h>
 
 /**
- * Implementation of the GetNextBucketIdCmd helper class
- */
-Db::GetNextBucketIdCmd::GetNextBucketIdCmd(sqlite3* db) : db(db)
-{
-}
-
-int Db::GetNextBucketIdCmd::callback(void* data, int argc, char** argv, char** azColName)
-{
-    // Compute the next identifier and return it back
-    int id = argv[0] ? String(argv[0]).toInt() : 1;
-
-    *((int*)data) = id;
-    return 0;
-}
-
-int Db::GetNextBucketIdCmd::run()
-{
-    const String sql = String("SELECT MAX(id) + 1 FROM buckets");
-    int id = -1;
-
-    char* errMsg = 0;
-    int rc = sqlite3_exec(db, sql.c_str(), callback, &id, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-
-    return id;
-}
-
-/**
  * Implementation of the GetBucketIdCmd helper class
  */
 Db::GetBucketIdCmd::GetBucketIdCmd(sqlite3* db) : db(db)
@@ -61,7 +33,7 @@ int Db::GetBucketIdCmd::run(const String& name)
     const String sql = String("SELECT id FROM buckets WHERE name = '") + name + String("'");
     int id = -1;
 
-    char* errMsg = 0;
+    char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), callback, &id, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
@@ -88,7 +60,7 @@ boolean Db::BucketExistsCmd::run(const int id)
         String("SELECT * FROM buckets WHERE id = ") + id + String(";");
     boolean exists = false;
 
-    char* errMsg = 0;
+    char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), callback, &exists, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
@@ -114,7 +86,7 @@ int Db::ListBucketsCmd::callback(void* data, int argc, char** argv, char** azCol
 void Db::ListBucketsCmd::run(LISTBUCKETSCALLBACK callback)
 {
     const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
-    char* errMsg = 0;
+    char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), this->callback, (void*)callback, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 }
@@ -140,25 +112,46 @@ void Db::open(bool createDatabase)
 
 void Db::createDatabase() 
 {
+    char* errMsg = 0;
+
     // Create the bucket table 
-    const char sql[] = "\
+    int rc = sqlite3_exec(db, 
+        "\
         CREATE TABLE buckets (\
             id   INTEGER NOT NULL, \
             name TEXT    NOT NULL, \
             PRIMARY KEY('id')\
-        );"; 
-    char* errMsg = 0; 
-    int rc = sqlite3_exec(db, sql, NULL, NULL, &errMsg);
+        );", 
+        NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the sequence table 
+    rc = sqlite3_exec(db,
+        "\
+        CREATE TABLE sequences (\
+            seq INTEGER NOT NULL, \
+            val INTEGER NOT NULL, \
+            PRIMARY KEY('seq')\
+        );", 
+        NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Insert the bucket id sequence
+    rc = sqlite3_exec(db, 
+        "\
+        INSERT INTO sequences (\
+            seq, \
+            val \
+        ) \
+        VALUES ( \
+            1, \
+            1 \
+        );", 
+        NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
     // Send the event
     android.onCreateDatabase();
-}
-
-int Db::getNextBucketId()
-{
-    GetNextBucketIdCmd cmd(db);
-    return cmd.run();
 }
 
 void Db::addBucket(const int id, const String& name) 
@@ -174,7 +167,7 @@ void Db::addBucket(const int id, const String& name)
             '") + name + String("'\
         );"
     ); 
-    char* errMsg = 0;
+    char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 }
@@ -185,6 +178,25 @@ int Db::getBucketId(const String& name)
     return cmd.run(name);
 }
 
+int Db::getNextVal(Seq seq)
+{
+    const String sql = String("\
+        SELECT val FROM sequences WHERE seq = ") + seq + String(";\
+        UPDATE sequences SET val = val + 1 WHERE seq = ") + seq + String(";");
+    char* errMsg = NULL;
+    int nextVal = 0;
+    int rc = sqlite3_exec(db, sql.c_str(), 
+        [](void* data, int argc, char** argv, char** azColName)
+        {
+            // Convert the nextVal to an integer and return it
+            *((int*)data) = String(argv[0]).toInt();
+            return 0;
+        }, 
+        &nextVal, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return nextVal;
+}
+
 void Db::updateBucket(const int id, const String& name)
 {
     // Update the bucket name
@@ -193,7 +205,7 @@ void Db::updateBucket(const int id, const String& name)
         SET name = '") + name + String("' \
         WHERE id = ") + id + String(";"
     ); 
-    char* errMsg = 0;
+    char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 }
@@ -209,12 +221,12 @@ void Db::deleteBucket(const int id)
     // Delete the whole bucket
     const String sql = 
         String("DELETE FROM buckets WHERE id = ") + id + String(";"); 
-    char* errMsg = 0;
+    char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 }
 
-void Db::listAll(LISTBUCKETSCALLBACK callback)
+void Db::listBuckets(LISTBUCKETSCALLBACK callback)
 {
     ListBucketsCmd cmd(db);
     cmd.run(callback);

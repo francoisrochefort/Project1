@@ -22,7 +22,7 @@ int BucketRepository::addBucket(const String& name)
     }
     
     // Get the next bucket identifier
-    int id = db.getNextBucketId();
+    int id = db.getNextVal(BucketId);
 
     // Insert the new bucket
     db.addBucket(id, name);
@@ -69,5 +69,5 @@ boolean BucketRepository::deleteBucket(const int id)
 
 void BucketRepository::listAll(LISTBUCKETSCALLBACK callback)
 {
-    db.listAll(callback);
+    db.listBuckets(callback);
 }

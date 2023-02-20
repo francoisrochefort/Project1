@@ -1,11 +1,11 @@
 #include <mc.h>
 
-int AwakeState::callback(Bucket* bucket) {
-
-    // Send each bucket one by one to android
-    android.onNextBucket(bucket);
-    return 0;
-}
+// int AwakeState::callback(Bucket* bucket) {
+// 
+//     // Send each bucket one by one to android
+//     android.onNextBucket(bucket);
+//     return 0;
+// }
 
 void AwakeState::setContext(Context* context) 
 {
@@ -29,7 +29,7 @@ void AwakeState::doEvents()
                 if(id == -1) {
 
                     // Throw an error if the bucket exists
-                    android.onError("Bucket name already exists");
+                    android.onError("A bucket with the same name already exists");
                     break;
                 }
 
@@ -46,7 +46,7 @@ void AwakeState::doEvents()
                 if (!repo.updateBucket(id, name)) {
 
                     // Throw an error if the bucket exists
-                    android.onError("Bucket with the same name exists or the specified bucket does not exists");
+                    android.onError("A bucket with the same name already exists or the specified bucket does not exists");
                     break;
                 }
 
@@ -82,8 +82,14 @@ void AwakeState::doEvents()
             break;
         case Cmd::ListBuckets:
             {
+                // Send each bucket one by one to android
                 BucketRepository repo;
-                repo.listAll(callback);
+                repo.listAll([](Bucket* bucket) 
+                    {
+                        android.onNextBucket(bucket);
+                        return 0;
+                    }
+                );
             }
             break;
         default:
