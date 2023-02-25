@@ -45,7 +45,17 @@ public:
 class AwakeState : public State 
 {
     Context* currentContext;
+
+    // Event handlers
+    void onAddBucket(const String& name);
+    void onUpdateBucket(const int id, const String& name);
+    void onDeleteBucket(const int id);
+    void onCopyBucket(const int id, const String& name);
+    void onListBuckets();
+
 public:
+
+    // Overides
     virtual void setContext(Context* context);
     virtual void doEvents();
 };
@@ -65,45 +75,23 @@ enum Seq {
 class Db {
     sqlite3* db;
 
-    // SQL command helpers
-    class GetBucketIdCmd {
-        sqlite3* db;
-        static int callback(void* data, int argc, char** argv, char** azColName);
-    public:
-        GetBucketIdCmd(sqlite3* db);
-        int run(const String& name);
-    };
-
-    class BucketExistsCmd {
-        sqlite3* db;
-        static int callback(void* data, int argc, char** argv, char** azColName);
-    public:
-        BucketExistsCmd(sqlite3* db);
-        boolean run(const int id);
-    };
-
-    class ListBucketsCmd {
-        sqlite3* db;
-        static int callback(void* data, int argc, char** argv, char** azColName);
-    public:
-        ListBucketsCmd(sqlite3* db);
-        void run(LISTBUCKETSCALLBACK callback);
-    };
-
 public:
     Db();
+
+    // Database
     void open(boolean createDatabase); 
     void createDatabase();
 
+    // Sequences
     int getNextVal(Seq seq);
 
+    // Buckets
     void addBucket(const int id, const String& name);
     int getBucketId(const String& name);
     void updateBucket(const int id, const String& name);
     boolean bucketExists(const int id);
     void deleteBucket(const int id);
     void listBuckets(LISTBUCKETSCALLBACK callback);
-
 };
 
 class Bucket {
@@ -127,7 +115,7 @@ public:
     int addBucket(const String& name);
     boolean updateBucket(const int id, const String& name);
     boolean deleteBucket(const int id);
-    // int copyBucket(const int bucketId, const String& name);
+    // int copyBucket(const int id, const String& name);
     void listAll(LISTBUCKETSCALLBACK callback);
 };
 

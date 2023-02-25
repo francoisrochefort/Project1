@@ -1,100 +1,6 @@
-
-/**
- * @file db.cpp
- * @author Francois Rochefort (francoisrochefort@hotmail.fr)
- * @brief Abstract the storage media where buckets are saved
- * @version 0.1
- * @date 2023-02-18
- * 
- * @copyright Copyright (c) 2023
- * 
- */
-
 #include <mc.h>
 
-/**
- * Implementation of the GetBucketIdCmd helper class
- */
-Db::GetBucketIdCmd::GetBucketIdCmd(sqlite3* db) : db(db)
-{
-}
-
-int Db::GetBucketIdCmd::callback(void* data, int argc, char** argv, char** azColName)
-{
-    // if there is no bucket matching the given name then return -1
-    int id = argv[0] ? String(argv[0]).toInt() : -1;
-
-    *((int*)data) = id;
-    return 0;
-}
-
-int Db::GetBucketIdCmd::run(const String& name)
-{
-    const String sql = String("SELECT id FROM buckets WHERE name = '") + name + String("'");
-    int id = -1;
-
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), callback, &id, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-
-    return id;
-}
-
-/**
- * Implementation of the BucketExistsCmd helper class
- */
-Db::BucketExistsCmd::BucketExistsCmd(sqlite3* db) : db(db)
-{
-}
-
-int Db::BucketExistsCmd::callback(void* data, int argc, char** argv, char** azColName)
-{
-    // If the program gets here then the bucket exists
-    *((boolean*)data) = true;
-    return 0;
-}
-
-boolean Db::BucketExistsCmd::run(const int id)
-{
-    const String sql = 
-        String("SELECT * FROM buckets WHERE id = ") + id + String(";");
-    boolean exists = false;
-
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), callback, &exists, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-
-    return exists;
-}
-
-/**
- * Implementation of the ListBucketsCmd helper class
- */
-Db::ListBucketsCmd::ListBucketsCmd(sqlite3* db) : db(db)
-{
-}
-
-int Db::ListBucketsCmd::callback(void* data, int argc, char** argv, char** azColName)
-{
-    // Create an instance of a bucket
-    Bucket bucket(String(argv[0]).toInt(), argv[1]);
-
-    // Perform the callback 
-    return ((LISTBUCKETSCALLBACK)data)(&bucket);
-}
-
-void Db::ListBucketsCmd::run(LISTBUCKETSCALLBACK callback)
-{
-    const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), this->callback, (void*)callback, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-}
-
-/**
- * Implementation of the Db class
- */
-Db::Db() : db(nullptr) 
+Db::Db() : db(NULL) 
 {
 }
 
@@ -174,8 +80,19 @@ void Db::addBucket(const int id, const String& name)
 
 int Db::getBucketId(const String& name)
 {
-    GetBucketIdCmd cmd(db);
-    return cmd.run(name);
+    const String sql = String("SELECT id FROM buckets WHERE name = '") + name + String("'");
+    int id = -1;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // if there is no bucket matching the given name then return -1
+        *((int*)data) = argv[0] ? String(argv[0]).toInt() : -1;;
+        return 0;
+    }
+    , &id, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    return id;
 }
 
 int Db::getNextVal(Seq seq)
@@ -212,8 +129,19 @@ void Db::updateBucket(const int id, const String& name)
 
 boolean Db::bucketExists(const int id)
 {
-    BucketExistsCmd cmd(db);
-    return cmd.run(id);
+    const String sql = 
+    String("SELECT * FROM buckets WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
 }
 
 void Db::deleteBucket(const int id)
@@ -228,6 +156,16 @@ void Db::deleteBucket(const int id)
 
 void Db::listBuckets(LISTBUCKETSCALLBACK callback)
 {
-    ListBucketsCmd cmd(db);
-    cmd.run(callback);
+    const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // Create an instance of a bucket
+        Bucket bucket(String(argv[0]).toInt(), argv[1]);
+
+        // Perform the callback 
+        return ((LISTBUCKETSCALLBACK)data)(&bucket);
+    },
+    (void*)callback, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
 }

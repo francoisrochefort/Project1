@@ -1,14 +1,4 @@
 
-/**
- * @file bucketrepository.cpp
- * @author Francois Rochefort (francoisrochefort@hotmail.fr)
- * @brief Buckets API
- * @version 0.1
- * @date 2023-02-18
- * 
- * @copyright Copyright (c) 2023
- * 
- */
 
 #include <mc.h>
 
