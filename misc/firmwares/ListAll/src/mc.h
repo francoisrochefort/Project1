@@ -110,10 +110,40 @@ public:
     void listBuckets(LISTBUCKETSCALLBACK callback);
 };
 
+const int MAX_SAMPLES = 16;
+
+typedef struct Sample {
+    int timestamps;
+    int angle;
+    int speed;
+    int pressure;
+} Sample;
+
 class Bucket {
+
+public:
+
     int id;
     String name;
-public:
+
+    int globalCorrectionFactor;
+    int minAngle20x;
+    int resetAngle10x;
+    int addAngle10x;
+    int maxAngle10x;
+    int curve0WeightKg;
+    int curveX1WeightKg;
+
+    Sample curve0Rising[MAX_SAMPLES];
+    Sample curve0Lowering[MAX_SAMPLES];
+    Sample curveX1Rising[MAX_SAMPLES];
+    Sample curveX1Lowering[MAX_SAMPLES];
+
+    int lowSpeedFactorCurve0[MAX_SAMPLES];
+    int highSpeedFactorCurve0[MAX_SAMPLES];
+    int lowSpeedFactorCurveX1[MAX_SAMPLES];
+    int highSpeedFactorCurveX1[MAX_SAMPLES];
+
     Bucket(const int id, char* name);
     int getId();
     String getName();
