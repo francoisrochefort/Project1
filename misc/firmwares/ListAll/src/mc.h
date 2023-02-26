@@ -1,11 +1,15 @@
 #if !defined MC_H
 #define MC_H
 
+// Includes
 #include <Arduino.h>
 #include <SPIFFS.h>
 #include <sqlite3.h>
-#include <stdarg.h>
 #include <assert.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
+#include <WiFiClient.h>
+#include <WiFi.h>
 
 // Serial port settings
 #define BAUD_RATE 115200
@@ -22,6 +26,7 @@ class Bucket;
 class BucketRepository;
 class Message;
 class Android;
+class MQTTStub;
 
 typedef int (*LISTBUCKETSCALLBACK)(Bucket* bucket);
 
@@ -194,6 +199,11 @@ public:
     void onError(const char* msg);
 };
 
+class MQTTStub {
+public:
+    void setup();
+};
+
 // Debug macro
 #define ASSERT( __e, msg) \
     if (!__e) { \
@@ -204,5 +214,6 @@ public:
 // Global variables
 extern Db db;
 extern Android android;
+extern MQTTStub mqttStub;
 
 #endif

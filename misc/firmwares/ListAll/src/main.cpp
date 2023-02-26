@@ -6,6 +6,7 @@
 // Global variables
 Db db;
 Android android;
+MQTTStub mqttStub;
 
 // Local variables
 Context context;
@@ -28,6 +29,9 @@ void setup()
     SPIFFS.remove("/scale.db");
     #endif
     db.open(!SPIFFS.exists("/scale.db"));
+
+    // Connect to MQTT
+    mqttStub.setup();
 }
 
 void loop()
