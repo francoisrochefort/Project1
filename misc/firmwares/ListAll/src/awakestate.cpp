@@ -5,10 +5,10 @@ void AwakeState::AwakeState::onAddBucket(const String& name)
     // Insert the new bucket
     BucketRepository repo;
     int id = repo.addBucket(name);
-    if(id == -1) {
+    if (id == ObjectAlreadyExists) {
 
         // Throw an error if the bucket exists
-        android.onError("A bucket with the same name already exists");
+        android.onError("Object already exists");
         return;
     }
 
@@ -20,10 +20,17 @@ void AwakeState::onUpdateBucket(const int id, const String& name)
 {
     // Update the bucket
     BucketRepository repo;
-    if (!repo.updateBucket(id, name)) {
+    Result result = repo.updateBucket(id, name);
+    if (result == ObjectDoesNotExists) {
 
-        // Throw an error if the bucket exists
-        android.onError("A bucket with the same name already exists or the specified bucket does not exists");
+        // Throw an error if the bucket does not exists
+        android.onError("Object does not exists");
+        return;
+    }
+    else if (result == ObjectAlreadyExists) {
+
+        // Throw an error if the bucket already exists
+        android.onError("Object already exists");
         return;
     }
 
@@ -35,10 +42,11 @@ void AwakeState::onDeleteBucket(const int id)
 {
     // Delete the bucket
     BucketRepository repo;
-    if (!repo.deleteBucket(id)) {
+    Result result = repo.deleteBucket(id);
+    if (result == ObjectDoesNotExists) {
 
         // Throw an error if the bucket does not exists
-        android.onError("Bucket does not exists");
+        android.onError("Object does not exists");
         return;
     }
 
@@ -54,10 +62,11 @@ void AwakeState::onCopyBucket(const int id, const String& name)
 
 void AwakeState::onListBuckets()
 {
-    // Send each bucket one by one to android
+    // Query the bucket list
     BucketRepository repo;
     repo.listAll([](Bucket* bucket) 
         {
+            // Send each bucket one by one
             android.onNextBucket(bucket);
             return 0;
         }
@@ -71,7 +80,7 @@ void AwakeState::setContext(Context* context)
 
 void AwakeState::doEvents() 
 {
-    // Is there any pending message
+    // Check for any pending message
     if (android.isMessagePending()) {
 
         // Read and dispatch the message

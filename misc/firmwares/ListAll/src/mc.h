@@ -25,6 +25,14 @@ class Android;
 
 typedef int (*LISTBUCKETSCALLBACK)(Bucket* bucket);
 
+// Errors
+typedef enum Result {
+    Succeeded = 1,
+    Failed = 0,
+    ObjectDoesNotExists = -1,
+    ObjectAlreadyExists = -2
+} Result;
+
 // Machine state
 class State
 {
@@ -46,7 +54,7 @@ class AwakeState : public State
 {
     Context* currentContext;
 
-    // Event handlers
+    // Handlers
     void onAddBucket(const String& name);
     void onUpdateBucket(const int id, const String& name);
     void onDeleteBucket(const int id);
@@ -73,9 +81,17 @@ enum Seq {
 };
 
 class Db {
+
     sqlite3* db;
 
 public:
+
+    // Results
+    enum Result {
+        NoRecordFound = -1
+    };
+
+    // Constructor
     Db();
 
     // Database
@@ -104,17 +120,13 @@ public:
     virtual ~Bucket();
 };
 
-class SequenceRepository {
-public:
-    int getNextVal(Seq seq);
-};
-
 class BucketRepository {
 
 public:
+
     int addBucket(const String& name);
-    boolean updateBucket(const int id, const String& name);
-    boolean deleteBucket(const int id);
+    Result updateBucket(const int id, const String& name);
+    Result deleteBucket(const int id);
     // int copyBucket(const int id, const String& name);
     void listAll(LISTBUCKETSCALLBACK callback);
 };

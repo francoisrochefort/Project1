@@ -81,17 +81,16 @@ void Db::addBucket(const int id, const String& name)
 int Db::getBucketId(const String& name)
 {
     const String sql = String("SELECT id FROM buckets WHERE name = '") + name + String("'");
-    int id = -1;
+    int id = NoRecordFound;
     char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
     {
-        // if there is no bucket matching the given name then return -1
-        *((int*)data) = argv[0] ? String(argv[0]).toInt() : -1;;
+        // if there is no bucket matching the given name then return NoRecordFound
+        *((int*)data) = argv[0] ? String(argv[0]).toInt() : NoRecordFound;;
         return 0;
     }
     , &id, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
-
     return id;
 }
 

@@ -1,18 +1,15 @@
 
 #include <mc.h>
 
-// Apis
 boolean Android::isMessagePending() { return Serial.available(); }
 
 Android::Message Android::getMessage()
 {
-    // Read the message
     Serial.readStringUntil('<');
     String msg = Serial.readStringUntil('>');
     return Android::Message(msg);
 }
 
-// Events
 void Android::onAwake() { Serial.printf("<%s>", ON_AWAKE); }
 void Android::onAddBucket(int bucketId) { Serial.printf("<%s%i>", ON_ADD_BUCKET, bucketId); }
 void Android::onUpdateBucket(int bucketId) { Serial.printf("<%s%i>", ON_UPDATE_BUCKET, bucketId); }
