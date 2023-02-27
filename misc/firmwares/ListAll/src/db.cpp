@@ -411,12 +411,54 @@ void Db::deleteBucket(const int id)
 
 void Db::listBuckets(LISTBUCKETSCALLBACK callback)
 {
-    const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
+    const String sql = String("SELECT * FROM buckets ORDER BY name ASC;");
     char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
     {
+        int i = 0;
+
         // Create an instance of a bucket
-        Bucket bucket(String(argv[0]).toInt(), argv[1]);
+        Bucket bucket(String(argv[i++]).toInt(), argv[i++]);
+
+        bucket.globalCorrectionFactor = String(argv[i++]).toInt();
+        bucket.minAngle20x = String(argv[i++]).toInt();
+        bucket.resetAngle10x = String(argv[i++]).toInt();
+        bucket.addAngle10x = String(argv[i++]).toInt();
+        bucket.maxAngle10x = String(argv[i++]).toInt();
+        bucket.curve0WeightKg = String(argv[i++]).toInt();
+        bucket.curveX1WeightKg = String(argv[i++]).toInt();
+
+        // Curve0 rising
+        for (int j = 0; j < MAX_SAMPLES; j++) {
+            bucket.curve0Rising[j].timestamps = String(argv[i++]).toInt();
+            bucket.curve0Rising[j].angle = String(argv[i++]).toInt();
+            bucket.curve0Rising[j].speed = String(argv[i++]).toInt();
+            bucket.curve0Rising[j].pressure = String(argv[i++]).toInt();
+        }
+
+        // Curve0 lowering
+        for (int k = 0; k < MAX_SAMPLES; k++) {
+            bucket.curve0Lowering[k].timestamps = String(argv[i++]).toInt();
+            bucket.curve0Lowering[k].angle = String(argv[i++]).toInt();
+            bucket.curve0Lowering[k].speed = String(argv[i++]).toInt();
+            bucket.curve0Lowering[k].pressure = String(argv[i++]).toInt();
+        }
+
+        // CurveX1 rising
+        for (int l = 0; l < MAX_SAMPLES; l++) {
+            bucket.curveX1Rising[l].timestamps = String(argv[i++]).toInt();
+            bucket.curveX1Rising[l].angle = String(argv[i++]).toInt();
+            bucket.curveX1Rising[l].speed = String(argv[i++]).toInt();
+            bucket.curveX1Rising[l].pressure = String(argv[i++]).toInt();
+        }
+
+        // CurveX1 lowering
+        for (int m = 0; m < MAX_SAMPLES; m++) {
+            bucket.curveX1Lowering[m].timestamps = String(argv[i++]).toInt();
+            bucket.curveX1Lowering[m].angle = String(argv[i++]).toInt();
+            bucket.curveX1Lowering[m].speed = String(argv[i++]).toInt();
+            bucket.curveX1Lowering[m].pressure = String(argv[i++]).toInt();
+        }
 
         // Perform the callback 
         return ((LISTBUCKETSCALLBACK)data)(&bucket);
