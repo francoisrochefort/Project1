@@ -80,6 +80,15 @@ enum Seq {
     BucketId = 1
 };
 
+const int MAX_CALIBRATION_SAMPLES = 16;
+
+typedef struct CalibrationSample {
+    int timestamps;
+    int angle;
+    int speed;
+    int pressure;
+} CalibrationSample;
+
 class Db {
 
     sqlite3* db;
@@ -105,50 +114,40 @@ public:
     void addBucket(const int id, const String& name);
     int getBucketId(const String& name);
     void updateBucket(const int id, const String& name);
+
+    boolean c0RisingExists(const int id);
+    void addC0Rising(const int id, const CalibrationSample* samples);
+    void updateC0Rising(const int id, const CalibrationSample* samples);
+
+    boolean c0LoweringExists(const int id);
+    void addC0Lowering(const int id, const CalibrationSample* samples);
+    void updateC0Lowering(const int id, const CalibrationSample* samples);
+
+    boolean x1RisingExists(const int id);
+    void addX1Rising(const int id, const CalibrationSample* samples);
+    void updateX1Rising(const int id, const CalibrationSample* samples);
+
+    boolean x1LoweringExists(const int id);
+    void addX1Lowering(const int id, const CalibrationSample* samples);
+    void updateX1Lowering(const int id, const CalibrationSample* samples);
+
     boolean bucketExists(const int id);
     void deleteBucket(const int id);
     void listBuckets(LISTBUCKETSCALLBACK callback);
 };
 
-const int MAX_SAMPLES = 16;
-
-typedef struct Sample {
-    int timestamps;
-    int angle;
-    int speed;
-    int pressure;
-} Sample;
-
 class Bucket {
-
-public:
 
     int id;
     String name;
 
-    int globalCorrectionFactor;
-    int minAngle20x;
-    int resetAngle10x;
-    int addAngle10x;
-    int maxAngle10x;
-    int curve0WeightKg;
-    int curveX1WeightKg;
-
-    Sample curve0Rising[MAX_SAMPLES];
-    Sample curve0Lowering[MAX_SAMPLES];
-    Sample curveX1Rising[MAX_SAMPLES];
-    Sample curveX1Lowering[MAX_SAMPLES];
-
-    int lowSpeedFactorCurve0[MAX_SAMPLES];
-    int highSpeedFactorCurve0[MAX_SAMPLES];
-    int lowSpeedFactorCurveX1[MAX_SAMPLES];
-    int highSpeedFactorCurveX1[MAX_SAMPLES];
-
+public:
     Bucket(const int id, char* name);
     int getId();
     String getName();
     virtual ~Bucket();
 };
+
 
 class BucketRepository {
 
@@ -156,6 +155,12 @@ public:
 
     int addBucket(const String& name);
     Result updateBucket(const int id, const String& name);
+
+    Result setC0Rising(const int id, const CalibrationSample* samples);
+    Result setC0Lowering(const int id, const CalibrationSample* samples);
+    Result setX1Rising(const int id, const CalibrationSample* samples);
+    Result setX1Lowering(const int id, const CalibrationSample* samples);
+
     Result deleteBucket(const int id);
     // int copyBucket(const int id, const String& name);
     void listAll(LISTBUCKETSCALLBACK callback);
@@ -236,3 +241,35 @@ extern Db db;
 extern Android android;
 
 #endif
+
+
+/*class Bucket {
+
+public:
+
+    int id;
+    String name;
+
+    int globalCorrectionFactor;
+    int minAngle20x;
+    int resetAngle10x;
+    int addAngle10x;
+    int maxAngle10x;
+    int curve0WeightKg;
+    int curveX1WeightKg;
+
+    CalibrationSample curve0Rising[MAX_CALIBRATION_SAMPLES];
+    CalibrationSample curve0Lowering[MAX_CALIBRATION_SAMPLES];
+    CalibrationSample curveX1Rising[MAX_CALIBRATION_SAMPLES];
+    CalibrationSample curveX1Lowering[MAX_CALIBRATION_SAMPLES];
+
+    int lowSpeedFactorCurve0[MAX_CALIBRATION_SAMPLES];
+    int highSpeedFactorCurve0[MAX_CALIBRATION_SAMPLES];
+    int lowSpeedFactorCurveX1[MAX_CALIBRATION_SAMPLES];
+    int highSpeedFactorCurveX1[MAX_CALIBRATION_SAMPLES];
+
+    Bucket(const int id, char* name);
+    int getId();
+    String getName();
+    virtual ~Bucket();
+};*/

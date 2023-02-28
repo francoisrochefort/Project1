@@ -26,265 +26,317 @@ void Db::createDatabase()
         CREATE TABLE buckets (\
             id   INTEGER NOT NULL, \
             name TEXT    NOT NULL, \
-            c0_rising_t_00 INTEGER, \
-            c0_rising_a_00 INTEGER, \
-            c0_rising_s_00 INTEGER, \
-            c0_rising_p_00 INTEGER, \
-            c0_rising_t_01 INTEGER, \
-            c0_rising_a_01 INTEGER, \
-            c0_rising_s_01 INTEGER, \
-            c0_rising_p_01 INTEGER, \
-            c0_rising_t_02 INTEGER, \
-            c0_rising_a_02 INTEGER, \
-            c0_rising_s_02 INTEGER, \
-            c0_rising_p_02 INTEGER, \
-            c0_rising_t_03 INTEGER, \
-            c0_rising_a_03 INTEGER, \
-            c0_rising_s_03 INTEGER, \
-            c0_rising_p_03 INTEGER, \
-            c0_rising_t_04 INTEGER, \
-            c0_rising_a_04 INTEGER, \
-            c0_rising_s_04 INTEGER, \
-            c0_rising_p_04 INTEGER, \
-            c0_rising_t_05 INTEGER, \
-            c0_rising_a_05 INTEGER, \
-            c0_rising_s_05 INTEGER, \
-            c0_rising_p_05 INTEGER, \
-            c0_rising_t_06 INTEGER, \
-            c0_rising_a_06 INTEGER, \
-            c0_rising_s_06 INTEGER, \
-            c0_rising_p_06 INTEGER, \
-            c0_rising_t_07 INTEGER, \
-            c0_rising_a_07 INTEGER, \
-            c0_rising_s_07 INTEGER, \
-            c0_rising_p_07 INTEGER, \
-            c0_rising_t_08 INTEGER, \
-            c0_rising_a_08 INTEGER, \
-            c0_rising_s_08 INTEGER, \
-            c0_rising_p_08 INTEGER, \
-            c0_rising_t_09 INTEGER, \
-            c0_rising_a_09 INTEGER, \
-            c0_rising_s_09 INTEGER, \
-            c0_rising_p_09 INTEGER, \
-            c0_rising_t_10 INTEGER, \
-            c0_rising_a_10 INTEGER, \
-            c0_rising_s_10 INTEGER, \
-            c0_rising_p_10 INTEGER, \
-            c0_rising_t_11 INTEGER, \
-            c0_rising_a_11 INTEGER, \
-            c0_rising_s_11 INTEGER, \
-            c0_rising_p_11 INTEGER, \
-            c0_rising_t_12 INTEGER, \
-            c0_rising_a_12 INTEGER, \
-            c0_rising_s_12 INTEGER, \
-            c0_rising_p_12 INTEGER, \
-            c0_rising_t_13 INTEGER, \
-            c0_rising_a_13 INTEGER, \
-            c0_rising_s_13 INTEGER, \
-            c0_rising_p_13 INTEGER, \
-            c0_rising_t_14 INTEGER, \
-            c0_rising_a_14 INTEGER, \
-            c0_rising_s_14 INTEGER, \
-            c0_rising_p_14 INTEGER, \
-            c0_rising_t_15 INTEGER, \
-            c0_rising_a_15 INTEGER, \
-            c0_rising_s_15 INTEGER, \
-            c0_rising_p_15 INTEGER, \
-            c0_Lowering_t_00 INTEGER, \
-            c0_Lowering_a_00 INTEGER, \
-            c0_Lowering_s_00 INTEGER, \
-            c0_Lowering_p_00 INTEGER, \
-            c0_Lowering_t_01 INTEGER, \
-            c0_Lowering_a_01 INTEGER, \
-            c0_Lowering_s_01 INTEGER, \
-            c0_Lowering_p_01 INTEGER, \
-            c0_Lowering_t_02 INTEGER, \
-            c0_Lowering_a_02 INTEGER, \
-            c0_Lowering_s_02 INTEGER, \
-            c0_Lowering_p_02 INTEGER, \
-            c0_Lowering_t_03 INTEGER, \
-            c0_Lowering_a_03 INTEGER, \
-            c0_Lowering_s_03 INTEGER, \
-            c0_Lowering_p_03 INTEGER, \
-            c0_Lowering_t_04 INTEGER, \
-            c0_Lowering_a_04 INTEGER, \
-            c0_Lowering_s_04 INTEGER, \
-            c0_Lowering_p_04 INTEGER, \
-            c0_Lowering_t_05 INTEGER, \
-            c0_Lowering_a_05 INTEGER, \
-            c0_Lowering_s_05 INTEGER, \
-            c0_Lowering_p_05 INTEGER, \
-            c0_Lowering_t_06 INTEGER, \
-            c0_Lowering_a_06 INTEGER, \
-            c0_Lowering_s_06 INTEGER, \
-            c0_Lowering_p_06 INTEGER, \
-            c0_Lowering_t_07 INTEGER, \
-            c0_Lowering_a_07 INTEGER, \
-            c0_Lowering_s_07 INTEGER, \
-            c0_Lowering_p_07 INTEGER, \
-            c0_Lowering_t_08 INTEGER, \
-            c0_Lowering_a_08 INTEGER, \
-            c0_Lowering_s_08 INTEGER, \
-            c0_Lowering_p_08 INTEGER, \
-            c0_Lowering_t_09 INTEGER, \
-            c0_Lowering_a_09 INTEGER, \
-            c0_Lowering_s_09 INTEGER, \
-            c0_Lowering_p_09 INTEGER, \
-            c0_Lowering_t_10 INTEGER, \
-            c0_Lowering_a_10 INTEGER, \
-            c0_Lowering_s_10 INTEGER, \
-            c0_Lowering_p_10 INTEGER, \
-            c0_Lowering_t_11 INTEGER, \
-            c0_Lowering_a_11 INTEGER, \
-            c0_Lowering_s_11 INTEGER, \
-            c0_Lowering_p_11 INTEGER, \
-            c0_Lowering_t_12 INTEGER, \
-            c0_Lowering_a_12 INTEGER, \
-            c0_Lowering_s_12 INTEGER, \
-            c0_Lowering_p_12 INTEGER, \
-            c0_Lowering_t_13 INTEGER, \
-            c0_Lowering_a_13 INTEGER, \
-            c0_Lowering_s_13 INTEGER, \
-            c0_Lowering_p_13 INTEGER, \
-            c0_Lowering_t_14 INTEGER, \
-            c0_Lowering_a_14 INTEGER, \
-            c0_Lowering_s_14 INTEGER, \
-            c0_Lowering_p_14 INTEGER, \
-            c0_Lowering_t_15 INTEGER, \
-            c0_Lowering_a_15 INTEGER, \
-            c0_Lowering_s_15 INTEGER, \
-            c0_Lowering_p_15 INTEGER, \
-            x1_rising_t_00 INTEGER, \
-            x1_rising_a_00 INTEGER, \
-            x1_rising_s_00 INTEGER, \
-            x1_rising_p_00 INTEGER, \
-            x1_rising_t_01 INTEGER, \
-            x1_rising_a_01 INTEGER, \
-            x1_rising_s_01 INTEGER, \
-            x1_rising_p_01 INTEGER, \
-            x1_rising_t_02 INTEGER, \
-            x1_rising_a_02 INTEGER, \
-            x1_rising_s_02 INTEGER, \
-            x1_rising_p_02 INTEGER, \
-            x1_rising_t_03 INTEGER, \
-            x1_rising_a_03 INTEGER, \
-            x1_rising_s_03 INTEGER, \
-            x1_rising_p_03 INTEGER, \
-            x1_rising_t_04 INTEGER, \
-            x1_rising_a_04 INTEGER, \
-            x1_rising_s_04 INTEGER, \
-            x1_rising_p_04 INTEGER, \
-            x1_rising_t_05 INTEGER, \
-            x1_rising_a_05 INTEGER, \
-            x1_rising_s_05 INTEGER, \
-            x1_rising_p_05 INTEGER, \
-            x1_rising_t_06 INTEGER, \
-            x1_rising_a_06 INTEGER, \
-            x1_rising_s_06 INTEGER, \
-            x1_rising_p_06 INTEGER, \
-            x1_rising_t_07 INTEGER, \
-            x1_rising_a_07 INTEGER, \
-            x1_rising_s_07 INTEGER, \
-            x1_rising_p_07 INTEGER, \
-            x1_rising_t_08 INTEGER, \
-            x1_rising_a_08 INTEGER, \
-            x1_rising_s_08 INTEGER, \
-            x1_rising_p_08 INTEGER, \
-            x1_rising_t_09 INTEGER, \
-            x1_rising_a_09 INTEGER, \
-            x1_rising_s_09 INTEGER, \
-            x1_rising_p_09 INTEGER, \
-            x1_rising_t_10 INTEGER, \
-            x1_rising_a_10 INTEGER, \
-            x1_rising_s_10 INTEGER, \
-            x1_rising_p_10 INTEGER, \
-            x1_rising_t_11 INTEGER, \
-            x1_rising_a_11 INTEGER, \
-            x1_rising_s_11 INTEGER, \
-            x1_rising_p_11 INTEGER, \
-            x1_rising_t_12 INTEGER, \
-            x1_rising_a_12 INTEGER, \
-            x1_rising_s_12 INTEGER, \
-            x1_rising_p_12 INTEGER, \
-            x1_rising_t_13 INTEGER, \
-            x1_rising_a_13 INTEGER, \
-            x1_rising_s_13 INTEGER, \
-            x1_rising_p_13 INTEGER, \
-            x1_rising_t_14 INTEGER, \
-            x1_rising_a_14 INTEGER, \
-            x1_rising_s_14 INTEGER, \
-            x1_rising_p_14 INTEGER, \
-            x1_rising_t_15 INTEGER, \
-            x1_rising_a_15 INTEGER, \
-            x1_rising_s_15 INTEGER, \
-            x1_rising_p_15 INTEGER, \
-            x1_Lowering_t_00 INTEGER, \
-            x1_Lowering_a_00 INTEGER, \
-            x1_Lowering_s_00 INTEGER, \
-            x1_Lowering_p_00 INTEGER, \
-            x1_Lowering_t_01 INTEGER, \
-            x1_Lowering_a_01 INTEGER, \
-            x1_Lowering_s_01 INTEGER, \
-            x1_Lowering_p_01 INTEGER, \
-            x1_Lowering_t_02 INTEGER, \
-            x1_Lowering_a_02 INTEGER, \
-            x1_Lowering_s_02 INTEGER, \
-            x1_Lowering_p_02 INTEGER, \
-            x1_Lowering_t_03 INTEGER, \
-            x1_Lowering_a_03 INTEGER, \
-            x1_Lowering_s_03 INTEGER, \
-            x1_Lowering_p_03 INTEGER, \
-            x1_Lowering_t_04 INTEGER, \
-            x1_Lowering_a_04 INTEGER, \
-            x1_Lowering_s_04 INTEGER, \
-            x1_Lowering_p_04 INTEGER, \
-            x1_Lowering_t_05 INTEGER, \
-            x1_Lowering_a_05 INTEGER, \
-            x1_Lowering_s_05 INTEGER, \
-            x1_Lowering_p_05 INTEGER, \
-            x1_Lowering_t_06 INTEGER, \
-            x1_Lowering_a_06 INTEGER, \
-            x1_Lowering_s_06 INTEGER, \
-            x1_Lowering_p_06 INTEGER, \
-            x1_Lowering_t_07 INTEGER, \
-            x1_Lowering_a_07 INTEGER, \
-            x1_Lowering_s_07 INTEGER, \
-            x1_Lowering_p_07 INTEGER, \
-            x1_Lowering_t_08 INTEGER, \
-            x1_Lowering_a_08 INTEGER, \
-            x1_Lowering_s_08 INTEGER, \
-            x1_Lowering_p_08 INTEGER, \
-            x1_Lowering_t_09 INTEGER, \
-            x1_Lowering_a_09 INTEGER, \
-            x1_Lowering_s_09 INTEGER, \
-            x1_Lowering_p_09 INTEGER, \
-            x1_Lowering_t_10 INTEGER, \
-            x1_Lowering_a_10 INTEGER, \
-            x1_Lowering_s_10 INTEGER, \
-            x1_Lowering_p_10 INTEGER, \
-            x1_Lowering_t_11 INTEGER, \
-            x1_Lowering_a_11 INTEGER, \
-            x1_Lowering_s_11 INTEGER, \
-            x1_Lowering_p_11 INTEGER, \
-            x1_Lowering_t_12 INTEGER, \
-            x1_Lowering_a_12 INTEGER, \
-            x1_Lowering_s_12 INTEGER, \
-            x1_Lowering_p_12 INTEGER, \
-            x1_Lowering_t_13 INTEGER, \
-            x1_Lowering_a_13 INTEGER, \
-            x1_Lowering_s_13 INTEGER, \
-            x1_Lowering_p_13 INTEGER, \
-            x1_Lowering_t_14 INTEGER, \
-            x1_Lowering_a_14 INTEGER, \
-            x1_Lowering_s_14 INTEGER, \
-            x1_Lowering_p_14 INTEGER, \
-            x1_Lowering_t_15 INTEGER, \
-            x1_Lowering_a_15 INTEGER, \
-            x1_Lowering_s_15 INTEGER, \
-            x1_Lowering_p_15 INTEGER, \
             PRIMARY KEY('id')\
         );", 
         NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg); 
+
+    rc = sqlite3_exec(db, 
+        "\
+        CREATE TABLE limit_settings (\
+            id                       INTEGER NOT NULL, \
+            global_correction_factor INTEGER NOT NULL, \
+            min_angle_20x            INTEGER NOT NULL, \
+            reset_angle_10x          INTEGER NOT NULL, \
+            add_angle_10x            INTEGER NOT NULL, \
+            max_angle_10x            INTEGER NOT NULL, \
+            c0_weight_kg             INTEGER NOT NULL, \
+            x1_weight_kg             INTEGER NOT NULL, \
+            PRIMARY KEY('id')\
+        );", 
+        NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the c0_rising table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE c0_rising( \
+        id INTEGER NOT NULL NOT NULL, \
+        t0  INTEGER NOT NULL, \
+        a0  INTEGER NOT NULL, \
+        s0  INTEGER NOT NULL, \
+        p0  INTEGER NOT NULL, \
+        t1  INTEGER NOT NULL, \
+        a1  INTEGER NOT NULL, \
+        s1  INTEGER NOT NULL, \
+        p1  INTEGER NOT NULL, \
+        t2  INTEGER NOT NULL, \
+        a2  INTEGER NOT NULL, \
+        s2  INTEGER NOT NULL, \
+        p2  INTEGER NOT NULL, \
+        t3  INTEGER NOT NULL, \
+        a3  INTEGER NOT NULL, \
+        s3  INTEGER NOT NULL, \
+        p3  INTEGER NOT NULL, \
+        t4  INTEGER NOT NULL, \
+        a4  INTEGER NOT NULL, \
+        s4  INTEGER NOT NULL, \
+        p4  INTEGER NOT NULL, \
+        t5  INTEGER NOT NULL, \
+        a5  INTEGER NOT NULL, \
+        s5  INTEGER NOT NULL, \
+        p5  INTEGER NOT NULL, \
+        t6  INTEGER NOT NULL, \
+        a6  INTEGER NOT NULL, \
+        s6  INTEGER NOT NULL, \
+        p6  INTEGER NOT NULL, \
+        t7  INTEGER NOT NULL, \
+        a7  INTEGER NOT NULL, \
+        s7  INTEGER NOT NULL, \
+        p7  INTEGER NOT NULL, \
+        t8  INTEGER NOT NULL, \
+        a8  INTEGER NOT NULL, \
+        s8  INTEGER NOT NULL, \
+        p8  INTEGER NOT NULL, \
+        t9  INTEGER NOT NULL, \
+        a9  INTEGER NOT NULL, \
+        s9  INTEGER NOT NULL, \
+        p9  INTEGER NOT NULL, \
+        t10  INTEGER NOT NULL, \
+        a10  INTEGER NOT NULL, \
+        s10  INTEGER NOT NULL, \
+        p10  INTEGER NOT NULL, \
+        t11  INTEGER NOT NULL, \
+        a11  INTEGER NOT NULL, \
+        s11  INTEGER NOT NULL, \
+        p11  INTEGER NOT NULL, \
+        t12  INTEGER NOT NULL, \
+        a12  INTEGER NOT NULL, \
+        s12  INTEGER NOT NULL, \
+        p12  INTEGER NOT NULL, \
+        t13  INTEGER NOT NULL, \
+        a13  INTEGER NOT NULL, \
+        s13  INTEGER NOT NULL, \
+        p13  INTEGER NOT NULL, \
+        t14  INTEGER NOT NULL, \
+        a14  INTEGER NOT NULL, \
+        s14  INTEGER NOT NULL, \
+        p14  INTEGER NOT NULL, \
+        t15  INTEGER NOT NULL, \
+        a15  INTEGER NOT NULL, \
+        s15  INTEGER NOT NULL, \
+        p15  INTEGER NOT NULL, \
+        PRIMARY KEY('id')\
+    );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the c0_lowering table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE c0_lowering( \
+        id INTEGER NOT NULL NOT NULL, \
+        t0  INTEGER NOT NULL, \
+        a0  INTEGER NOT NULL, \
+        s0  INTEGER NOT NULL, \
+        p0  INTEGER NOT NULL, \
+        t1  INTEGER NOT NULL, \
+        a1  INTEGER NOT NULL, \
+        s1  INTEGER NOT NULL, \
+        p1  INTEGER NOT NULL, \
+        t2  INTEGER NOT NULL, \
+        a2  INTEGER NOT NULL, \
+        s2  INTEGER NOT NULL, \
+        p2  INTEGER NOT NULL, \
+        t3  INTEGER NOT NULL, \
+        a3  INTEGER NOT NULL, \
+        s3  INTEGER NOT NULL, \
+        p3  INTEGER NOT NULL, \
+        t4  INTEGER NOT NULL, \
+        a4  INTEGER NOT NULL, \
+        s4  INTEGER NOT NULL, \
+        p4  INTEGER NOT NULL, \
+        t5  INTEGER NOT NULL, \
+        a5  INTEGER NOT NULL, \
+        s5  INTEGER NOT NULL, \
+        p5  INTEGER NOT NULL, \
+        t6  INTEGER NOT NULL, \
+        a6  INTEGER NOT NULL, \
+        s6  INTEGER NOT NULL, \
+        p6  INTEGER NOT NULL, \
+        t7  INTEGER NOT NULL, \
+        a7  INTEGER NOT NULL, \
+        s7  INTEGER NOT NULL, \
+        p7  INTEGER NOT NULL, \
+        t8  INTEGER NOT NULL, \
+        a8  INTEGER NOT NULL, \
+        s8  INTEGER NOT NULL, \
+        p8  INTEGER NOT NULL, \
+        t9  INTEGER NOT NULL, \
+        a9  INTEGER NOT NULL, \
+        s9  INTEGER NOT NULL, \
+        p9  INTEGER NOT NULL, \
+        t10  INTEGER NOT NULL, \
+        a10  INTEGER NOT NULL, \
+        s10  INTEGER NOT NULL, \
+        p10  INTEGER NOT NULL, \
+        t11  INTEGER NOT NULL, \
+        a11  INTEGER NOT NULL, \
+        s11  INTEGER NOT NULL, \
+        p11  INTEGER NOT NULL, \
+        t12  INTEGER NOT NULL, \
+        a12  INTEGER NOT NULL, \
+        s12  INTEGER NOT NULL, \
+        p12  INTEGER NOT NULL, \
+        t13  INTEGER NOT NULL, \
+        a13  INTEGER NOT NULL, \
+        s13  INTEGER NOT NULL, \
+        p13  INTEGER NOT NULL, \
+        t14  INTEGER NOT NULL, \
+        a14  INTEGER NOT NULL, \
+        s14  INTEGER NOT NULL, \
+        p14  INTEGER NOT NULL, \
+        t15  INTEGER NOT NULL, \
+        a15  INTEGER NOT NULL, \
+        s15  INTEGER NOT NULL, \
+        p15  INTEGER NOT NULL, \
+        PRIMARY KEY('id')\
+    );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the x1_rising table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE x1_rising( \
+        id INTEGER NOT NULL NOT NULL, \
+        t0  INTEGER NOT NULL, \
+        a0  INTEGER NOT NULL, \
+        s0  INTEGER NOT NULL, \
+        p0  INTEGER NOT NULL, \
+        t1  INTEGER NOT NULL, \
+        a1  INTEGER NOT NULL, \
+        s1  INTEGER NOT NULL, \
+        p1  INTEGER NOT NULL, \
+        t2  INTEGER NOT NULL, \
+        a2  INTEGER NOT NULL, \
+        s2  INTEGER NOT NULL, \
+        p2  INTEGER NOT NULL, \
+        t3  INTEGER NOT NULL, \
+        a3  INTEGER NOT NULL, \
+        s3  INTEGER NOT NULL, \
+        p3  INTEGER NOT NULL, \
+        t4  INTEGER NOT NULL, \
+        a4  INTEGER NOT NULL, \
+        s4  INTEGER NOT NULL, \
+        p4  INTEGER NOT NULL, \
+        t5  INTEGER NOT NULL, \
+        a5  INTEGER NOT NULL, \
+        s5  INTEGER NOT NULL, \
+        p5  INTEGER NOT NULL, \
+        t6  INTEGER NOT NULL, \
+        a6  INTEGER NOT NULL, \
+        s6  INTEGER NOT NULL, \
+        p6  INTEGER NOT NULL, \
+        t7  INTEGER NOT NULL, \
+        a7  INTEGER NOT NULL, \
+        s7  INTEGER NOT NULL, \
+        p7  INTEGER NOT NULL, \
+        t8  INTEGER NOT NULL, \
+        a8  INTEGER NOT NULL, \
+        s8  INTEGER NOT NULL, \
+        p8  INTEGER NOT NULL, \
+        t9  INTEGER NOT NULL, \
+        a9  INTEGER NOT NULL, \
+        s9  INTEGER NOT NULL, \
+        p9  INTEGER NOT NULL, \
+        t10  INTEGER NOT NULL, \
+        a10  INTEGER NOT NULL, \
+        s10  INTEGER NOT NULL, \
+        p10  INTEGER NOT NULL, \
+        t11  INTEGER NOT NULL, \
+        a11  INTEGER NOT NULL, \
+        s11  INTEGER NOT NULL, \
+        p11  INTEGER NOT NULL, \
+        t12  INTEGER NOT NULL, \
+        a12  INTEGER NOT NULL, \
+        s12  INTEGER NOT NULL, \
+        p12  INTEGER NOT NULL, \
+        t13  INTEGER NOT NULL, \
+        a13  INTEGER NOT NULL, \
+        s13  INTEGER NOT NULL, \
+        p13  INTEGER NOT NULL, \
+        t14  INTEGER NOT NULL, \
+        a14  INTEGER NOT NULL, \
+        s14  INTEGER NOT NULL, \
+        p14  INTEGER NOT NULL, \
+        t15  INTEGER NOT NULL, \
+        a15  INTEGER NOT NULL, \
+        s15  INTEGER NOT NULL, \
+        p15  INTEGER NOT NULL, \
+        PRIMARY KEY('id')\
+    );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the x1_lowering table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE x1_lowering( \
+        id INTEGER NOT NULL NOT NULL, \
+        t0  INTEGER NOT NULL, \
+        a0  INTEGER NOT NULL, \
+        s0  INTEGER NOT NULL, \
+        p0  INTEGER NOT NULL, \
+        t1  INTEGER NOT NULL, \
+        a1  INTEGER NOT NULL, \
+        s1  INTEGER NOT NULL, \
+        p1  INTEGER NOT NULL, \
+        t2  INTEGER NOT NULL, \
+        a2  INTEGER NOT NULL, \
+        s2  INTEGER NOT NULL, \
+        p2  INTEGER NOT NULL, \
+        t3  INTEGER NOT NULL, \
+        a3  INTEGER NOT NULL, \
+        s3  INTEGER NOT NULL, \
+        p3  INTEGER NOT NULL, \
+        t4  INTEGER NOT NULL, \
+        a4  INTEGER NOT NULL, \
+        s4  INTEGER NOT NULL, \
+        p4  INTEGER NOT NULL, \
+        t5  INTEGER NOT NULL, \
+        a5  INTEGER NOT NULL, \
+        s5  INTEGER NOT NULL, \
+        p5  INTEGER NOT NULL, \
+        t6  INTEGER NOT NULL, \
+        a6  INTEGER NOT NULL, \
+        s6  INTEGER NOT NULL, \
+        p6  INTEGER NOT NULL, \
+        t7  INTEGER NOT NULL, \
+        a7  INTEGER NOT NULL, \
+        s7  INTEGER NOT NULL, \
+        p7  INTEGER NOT NULL, \
+        t8  INTEGER NOT NULL, \
+        a8  INTEGER NOT NULL, \
+        s8  INTEGER NOT NULL, \
+        p8  INTEGER NOT NULL, \
+        t9  INTEGER NOT NULL, \
+        a9  INTEGER NOT NULL, \
+        s9  INTEGER NOT NULL, \
+        p9  INTEGER NOT NULL, \
+        t10  INTEGER NOT NULL, \
+        a10  INTEGER NOT NULL, \
+        s10  INTEGER NOT NULL, \
+        p10  INTEGER NOT NULL, \
+        t11  INTEGER NOT NULL, \
+        a11  INTEGER NOT NULL, \
+        s11  INTEGER NOT NULL, \
+        p11  INTEGER NOT NULL, \
+        t12  INTEGER NOT NULL, \
+        a12  INTEGER NOT NULL, \
+        s12  INTEGER NOT NULL, \
+        p12  INTEGER NOT NULL, \
+        t13  INTEGER NOT NULL, \
+        a13  INTEGER NOT NULL, \
+        s13  INTEGER NOT NULL, \
+        p13  INTEGER NOT NULL, \
+        t14  INTEGER NOT NULL, \
+        a14  INTEGER NOT NULL, \
+        s14  INTEGER NOT NULL, \
+        p14  INTEGER NOT NULL, \
+        t15  INTEGER NOT NULL, \
+        a15  INTEGER NOT NULL, \
+        s15  INTEGER NOT NULL, \
+        p15  INTEGER NOT NULL, \
+        PRIMARY KEY('id')\
+    );", 
+    NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
     // Create the sequence table 
@@ -315,6 +367,7 @@ void Db::createDatabase()
     // Send the event
     android.onCreateDatabase();
 }
+
 
 void Db::addBucket(const int id, const String& name) 
 {
@@ -382,6 +435,954 @@ void Db::updateBucket(const int id, const String& name)
     ASSERT(rc == SQLITE_OK, errMsg);
 }
 
+boolean Db::c0RisingExists(const int id)
+{
+    const String sql = 
+        String("SELECT * FROM c0_rising WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
+}
+
+void Db::addC0Rising(const int id, const CalibrationSample* samples)
+{
+    // Insert the new bucket
+    const String sql = String("\
+    INSERT INTO c0_rising (\
+        id,\
+        t0,\
+        a0,\
+        s0,\
+        p0,\
+        t1,\
+        a1,\
+        s1,\
+        p1,\
+        t2,\
+        a2,\
+        s2,\
+        p2,\
+        t3,\
+        a3,\
+        s3,\
+        p3,\
+        t4,\
+        a4,\
+        s4,\
+        p4,\
+        t5,\
+        a5,\
+        s5,\
+        p5,\
+        t6,\
+        a6,\
+        s6,\
+        p6,\
+        t7,\
+        a7,\
+        s7,\
+        p7,\
+        t8,\
+        a8,\
+        s8,\
+        p8,\
+        t9,\
+        a9,\
+        s9,\
+        p9,\
+        t10,\
+        a10,\
+        s10,\
+        p10,\
+        t11,\
+        a11,\
+        s11,\
+        p11,\
+        t12,\
+        a12,\
+        s12,\
+        p12,\
+        t13,\
+        a13,\
+        s13,\
+        p13,\
+        t14,\
+        a14,\
+        s14,\
+        p14,\
+        t15,\
+        a15,\
+        s15,\
+        p15\
+    )\
+    VALUES (\
+        ") + id + String(",\
+        ") + samples[0].timestamps + String(", \
+        ") + samples[0].angle + String(", \
+        ") + samples[0].speed + String(", \
+        ") + samples[0].pressure + String(", \
+        ") + samples[1].timestamps + String(", \
+        ") + samples[1].angle + String(", \
+        ") + samples[1].speed + String(", \
+        ") + samples[1].pressure + String(", \
+        ") + samples[2].timestamps + String(", \
+        ") + samples[2].angle + String(", \
+        ") + samples[2].speed + String(", \
+        ") + samples[2].pressure + String(", \
+        ") + samples[3].timestamps + String(", \
+        ") + samples[3].angle + String(", \
+        ") + samples[3].speed + String(", \
+        ") + samples[3].pressure + String(", \
+        ") + samples[4].timestamps + String(", \
+        ") + samples[4].angle + String(", \
+        ") + samples[4].speed + String(", \
+        ") + samples[4].pressure + String(", \
+        ") + samples[5].timestamps + String(", \
+        ") + samples[5].angle + String(", \
+        ") + samples[5].speed + String(", \
+        ") + samples[5].pressure + String(", \
+        ") + samples[6].timestamps + String(", \
+        ") + samples[6].angle + String(", \
+        ") + samples[6].speed + String(", \
+        ") + samples[6].pressure + String(", \
+        ") + samples[7].timestamps + String(", \
+        ") + samples[7].angle + String(", \
+        ") + samples[7].speed + String(", \
+        ") + samples[7].pressure + String(", \
+        ") + samples[8].timestamps + String(", \
+        ") + samples[8].angle + String(", \
+        ") + samples[8].speed + String(", \
+        ") + samples[8].pressure + String(", \
+        ") + samples[9].timestamps + String(", \
+        ") + samples[9].angle + String(", \
+        ") + samples[9].speed + String(", \
+        ") + samples[9].pressure + String(", \
+        ") + samples[10].timestamps + String(", \
+        ") + samples[10].angle + String(", \
+        ") + samples[10].speed + String(", \
+        ") + samples[10].pressure + String(", \
+        ") + samples[11].timestamps + String(", \
+        ") + samples[11].angle + String(", \
+        ") + samples[11].speed + String(", \
+        ") + samples[11].pressure + String(", \
+        ") + samples[12].timestamps + String(", \
+        ") + samples[12].angle + String(", \
+        ") + samples[12].speed + String(", \
+        ") + samples[12].pressure + String(", \
+        ") + samples[13].timestamps + String(", \
+        ") + samples[13].angle + String(", \
+        ") + samples[13].speed + String(", \
+        ") + samples[13].pressure + String(", \
+        ") + samples[14].timestamps + String(", \
+        ") + samples[14].angle + String(", \
+        ") + samples[14].speed + String(", \
+        ") + samples[14].pressure + String(", \
+        ") + samples[15].timestamps + String(", \
+        ") + samples[15].angle + String(", \
+        ") + samples[15].speed + String(", \
+        ") + samples[15].pressure + String(" \
+    );");
+
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+void Db::updateC0Rising(const int id, const CalibrationSample* samples)
+{
+    // Update the bucket name
+    const String sql = String("\
+        UPDATE c0_rising \
+        SET \ 
+        t0 = ") + samples[0].timestamps + String(", \
+        a0 = ") + samples[0].angle + String(", \
+        s0 = ") + samples[0].speed + String(", \
+        p0 = ") + samples[0].pressure + String(", \
+        t1 = ") + samples[1].timestamps + String(", \
+        a1 = ") + samples[1].angle + String(", \
+        s1 = ") + samples[1].speed + String(", \
+        p1 = ") + samples[1].pressure + String(", \
+        t2 = ") + samples[2].timestamps + String(", \
+        a2 = ") + samples[2].angle + String(", \
+        s2 = ") + samples[2].speed + String(", \
+        p2 = ") + samples[2].pressure + String(", \
+        t3 = ") + samples[3].timestamps + String(", \
+        a3 = ") + samples[3].angle + String(", \
+        s3 = ") + samples[3].speed + String(", \
+        p3 = ") + samples[3].pressure + String(", \
+        t4 = ") + samples[4].timestamps + String(", \
+        a4 = ") + samples[4].angle + String(", \
+        s4 = ") + samples[4].speed + String(", \
+        p4 = ") + samples[4].pressure + String(", \
+        t5 = ") + samples[5].timestamps + String(", \
+        a5 = ") + samples[5].angle + String(", \
+        s5 = ") + samples[5].speed + String(", \
+        p5 = ") + samples[5].pressure + String(", \
+        t6 = ") + samples[6].timestamps + String(", \
+        a6 = ") + samples[6].angle + String(", \
+        s6 = ") + samples[6].speed + String(", \
+        p6 = ") + samples[6].pressure + String(", \
+        t7 = ") + samples[7].timestamps + String(", \
+        a7 = ") + samples[7].angle + String(", \
+        s7 = ") + samples[7].speed + String(", \
+        p7 = ") + samples[7].pressure + String(", \
+        t8 = ") + samples[8].timestamps + String(", \
+        a8 = ") + samples[8].angle + String(", \
+        s8 = ") + samples[8].speed + String(", \
+        p8 = ") + samples[8].pressure + String(", \
+        t9 = ") + samples[9].timestamps + String(", \
+        a9 = ") + samples[9].angle + String(", \
+        s9 = ") + samples[9].speed + String(", \
+        p9 = ") + samples[9].pressure + String(", \
+        t10 = ") + samples[10].timestamps + String(", \
+        a10 = ") + samples[10].angle + String(", \
+        s10 = ") + samples[10].speed + String(", \
+        p10 = ") + samples[10].pressure + String(", \
+        t11 = ") + samples[11].timestamps + String(", \
+        a11 = ") + samples[11].angle + String(", \
+        s11 = ") + samples[11].speed + String(", \
+        p11 = ") + samples[11].pressure + String(", \
+        t12 = ") + samples[12].timestamps + String(", \
+        a12 = ") + samples[12].angle + String(", \
+        s12 = ") + samples[12].speed + String(", \
+        p12 = ") + samples[12].pressure + String(", \
+        t13 = ") + samples[13].timestamps + String(", \
+        a13 = ") + samples[13].angle + String(", \
+        s13 = ") + samples[13].speed + String(", \
+        p13 = ") + samples[13].pressure + String(", \
+        t14 = ") + samples[14].timestamps + String(", \
+        a14 = ") + samples[14].angle + String(", \
+        s14 = ") + samples[14].speed + String(", \
+        p14 = ") + samples[14].pressure + String(", \
+        t15 = ") + samples[15].timestamps + String(", \
+        a15 = ") + samples[15].angle + String(", \
+        s15 = ") + samples[15].speed + String(", \
+        p15 = ") + samples[15].pressure + String(" \
+        WHERE id = ") + id + String(";");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+boolean Db::c0LoweringExists(const int id)
+{
+    const String sql = 
+    String("SELECT * FROM c0_lowering WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
+}
+
+void Db::addC0Lowering(const int id, const CalibrationSample* samples)
+{
+    // Insert the new bucket
+    const String sql = String("\
+    INSERT INTO c0_lowering (\
+        id,\
+        t0,\
+        a0,\
+        s0,\
+        p0,\
+        t1,\
+        a1,\
+        s1,\
+        p1,\
+        t2,\
+        a2,\
+        s2,\
+        p2,\
+        t3,\
+        a3,\
+        s3,\
+        p3,\
+        t4,\
+        a4,\
+        s4,\
+        p4,\
+        t5,\
+        a5,\
+        s5,\
+        p5,\
+        t6,\
+        a6,\
+        s6,\
+        p6,\
+        t7,\
+        a7,\
+        s7,\
+        p7,\
+        t8,\
+        a8,\
+        s8,\
+        p8,\
+        t9,\
+        a9,\
+        s9,\
+        p9,\
+        t10,\
+        a10,\
+        s10,\
+        p10,\
+        t11,\
+        a11,\
+        s11,\
+        p11,\
+        t12,\
+        a12,\
+        s12,\
+        p12,\
+        t13,\
+        a13,\
+        s13,\
+        p13,\
+        t14,\
+        a14,\
+        s14,\
+        p14,\
+        t15,\
+        a15,\
+        s15,\
+        p15\
+    )\
+    VALUES (\
+        ") + id + String(",\
+        ") + samples[0].timestamps + String(", \
+        ") + samples[0].angle + String(", \
+        ") + samples[0].speed + String(", \
+        ") + samples[0].pressure + String(", \
+        ") + samples[1].timestamps + String(", \
+        ") + samples[1].angle + String(", \
+        ") + samples[1].speed + String(", \
+        ") + samples[1].pressure + String(", \
+        ") + samples[2].timestamps + String(", \
+        ") + samples[2].angle + String(", \
+        ") + samples[2].speed + String(", \
+        ") + samples[2].pressure + String(", \
+        ") + samples[3].timestamps + String(", \
+        ") + samples[3].angle + String(", \
+        ") + samples[3].speed + String(", \
+        ") + samples[3].pressure + String(", \
+        ") + samples[4].timestamps + String(", \
+        ") + samples[4].angle + String(", \
+        ") + samples[4].speed + String(", \
+        ") + samples[4].pressure + String(", \
+        ") + samples[5].timestamps + String(", \
+        ") + samples[5].angle + String(", \
+        ") + samples[5].speed + String(", \
+        ") + samples[5].pressure + String(", \
+        ") + samples[6].timestamps + String(", \
+        ") + samples[6].angle + String(", \
+        ") + samples[6].speed + String(", \
+        ") + samples[6].pressure + String(", \
+        ") + samples[7].timestamps + String(", \
+        ") + samples[7].angle + String(", \
+        ") + samples[7].speed + String(", \
+        ") + samples[7].pressure + String(", \
+        ") + samples[8].timestamps + String(", \
+        ") + samples[8].angle + String(", \
+        ") + samples[8].speed + String(", \
+        ") + samples[8].pressure + String(", \
+        ") + samples[9].timestamps + String(", \
+        ") + samples[9].angle + String(", \
+        ") + samples[9].speed + String(", \
+        ") + samples[9].pressure + String(", \
+        ") + samples[10].timestamps + String(", \
+        ") + samples[10].angle + String(", \
+        ") + samples[10].speed + String(", \
+        ") + samples[10].pressure + String(", \
+        ") + samples[11].timestamps + String(", \
+        ") + samples[11].angle + String(", \
+        ") + samples[11].speed + String(", \
+        ") + samples[11].pressure + String(", \
+        ") + samples[12].timestamps + String(", \
+        ") + samples[12].angle + String(", \
+        ") + samples[12].speed + String(", \
+        ") + samples[12].pressure + String(", \
+        ") + samples[13].timestamps + String(", \
+        ") + samples[13].angle + String(", \
+        ") + samples[13].speed + String(", \
+        ") + samples[13].pressure + String(", \
+        ") + samples[14].timestamps + String(", \
+        ") + samples[14].angle + String(", \
+        ") + samples[14].speed + String(", \
+        ") + samples[14].pressure + String(", \
+        ") + samples[15].timestamps + String(", \
+        ") + samples[15].angle + String(", \
+        ") + samples[15].speed + String(", \
+        ") + samples[15].pressure + String(" \
+    );");
+
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+void Db::updateC0Lowering(const int id, const CalibrationSample* samples)
+{
+    // Update the bucket name
+    const String sql = String("\
+        UPDATE c0_lowering \
+        SET \ 
+        t0 = ") + samples[0].timestamps + String(", \
+        a0 = ") + samples[0].angle + String(", \
+        s0 = ") + samples[0].speed + String(", \
+        p0 = ") + samples[0].pressure + String(", \
+        t1 = ") + samples[1].timestamps + String(", \
+        a1 = ") + samples[1].angle + String(", \
+        s1 = ") + samples[1].speed + String(", \
+        p1 = ") + samples[1].pressure + String(", \
+        t2 = ") + samples[2].timestamps + String(", \
+        a2 = ") + samples[2].angle + String(", \
+        s2 = ") + samples[2].speed + String(", \
+        p2 = ") + samples[2].pressure + String(", \
+        t3 = ") + samples[3].timestamps + String(", \
+        a3 = ") + samples[3].angle + String(", \
+        s3 = ") + samples[3].speed + String(", \
+        p3 = ") + samples[3].pressure + String(", \
+        t4 = ") + samples[4].timestamps + String(", \
+        a4 = ") + samples[4].angle + String(", \
+        s4 = ") + samples[4].speed + String(", \
+        p4 = ") + samples[4].pressure + String(", \
+        t5 = ") + samples[5].timestamps + String(", \
+        a5 = ") + samples[5].angle + String(", \
+        s5 = ") + samples[5].speed + String(", \
+        p5 = ") + samples[5].pressure + String(", \
+        t6 = ") + samples[6].timestamps + String(", \
+        a6 = ") + samples[6].angle + String(", \
+        s6 = ") + samples[6].speed + String(", \
+        p6 = ") + samples[6].pressure + String(", \
+        t7 = ") + samples[7].timestamps + String(", \
+        a7 = ") + samples[7].angle + String(", \
+        s7 = ") + samples[7].speed + String(", \
+        p7 = ") + samples[7].pressure + String(", \
+        t8 = ") + samples[8].timestamps + String(", \
+        a8 = ") + samples[8].angle + String(", \
+        s8 = ") + samples[8].speed + String(", \
+        p8 = ") + samples[8].pressure + String(", \
+        t9 = ") + samples[9].timestamps + String(", \
+        a9 = ") + samples[9].angle + String(", \
+        s9 = ") + samples[9].speed + String(", \
+        p9 = ") + samples[9].pressure + String(", \
+        t10 = ") + samples[10].timestamps + String(", \
+        a10 = ") + samples[10].angle + String(", \
+        s10 = ") + samples[10].speed + String(", \
+        p10 = ") + samples[10].pressure + String(", \
+        t11 = ") + samples[11].timestamps + String(", \
+        a11 = ") + samples[11].angle + String(", \
+        s11 = ") + samples[11].speed + String(", \
+        p11 = ") + samples[11].pressure + String(", \
+        t12 = ") + samples[12].timestamps + String(", \
+        a12 = ") + samples[12].angle + String(", \
+        s12 = ") + samples[12].speed + String(", \
+        p12 = ") + samples[12].pressure + String(", \
+        t13 = ") + samples[13].timestamps + String(", \
+        a13 = ") + samples[13].angle + String(", \
+        s13 = ") + samples[13].speed + String(", \
+        p13 = ") + samples[13].pressure + String(", \
+        t14 = ") + samples[14].timestamps + String(", \
+        a14 = ") + samples[14].angle + String(", \
+        s14 = ") + samples[14].speed + String(", \
+        p14 = ") + samples[14].pressure + String(", \
+        t15 = ") + samples[15].timestamps + String(", \
+        a15 = ") + samples[15].angle + String(", \
+        s15 = ") + samples[15].speed + String(", \
+        p15 = ") + samples[15].pressure + String(" \
+        WHERE id = ") + id + String(";");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+boolean Db::x1RisingExists(const int id)
+{
+    const String sql = 
+    String("SELECT * FROM x1_rising WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
+}
+
+void Db::addX1Rising(const int id, const CalibrationSample* samples)
+{
+    // Insert the new bucket
+    const String sql = String("\
+    INSERT INTO x1_rising (\
+        id,\
+        t0,\
+        a0,\
+        s0,\
+        p0,\
+        t1,\
+        a1,\
+        s1,\
+        p1,\
+        t2,\
+        a2,\
+        s2,\
+        p2,\
+        t3,\
+        a3,\
+        s3,\
+        p3,\
+        t4,\
+        a4,\
+        s4,\
+        p4,\
+        t5,\
+        a5,\
+        s5,\
+        p5,\
+        t6,\
+        a6,\
+        s6,\
+        p6,\
+        t7,\
+        a7,\
+        s7,\
+        p7,\
+        t8,\
+        a8,\
+        s8,\
+        p8,\
+        t9,\
+        a9,\
+        s9,\
+        p9,\
+        t10,\
+        a10,\
+        s10,\
+        p10,\
+        t11,\
+        a11,\
+        s11,\
+        p11,\
+        t12,\
+        a12,\
+        s12,\
+        p12,\
+        t13,\
+        a13,\
+        s13,\
+        p13,\
+        t14,\
+        a14,\
+        s14,\
+        p14,\
+        t15,\
+        a15,\
+        s15,\
+        p15\
+    )\
+    VALUES (\
+        ") + id + String(",\
+        ") + samples[0].timestamps + String(", \
+        ") + samples[0].angle + String(", \
+        ") + samples[0].speed + String(", \
+        ") + samples[0].pressure + String(", \
+        ") + samples[1].timestamps + String(", \
+        ") + samples[1].angle + String(", \
+        ") + samples[1].speed + String(", \
+        ") + samples[1].pressure + String(", \
+        ") + samples[2].timestamps + String(", \
+        ") + samples[2].angle + String(", \
+        ") + samples[2].speed + String(", \
+        ") + samples[2].pressure + String(", \
+        ") + samples[3].timestamps + String(", \
+        ") + samples[3].angle + String(", \
+        ") + samples[3].speed + String(", \
+        ") + samples[3].pressure + String(", \
+        ") + samples[4].timestamps + String(", \
+        ") + samples[4].angle + String(", \
+        ") + samples[4].speed + String(", \
+        ") + samples[4].pressure + String(", \
+        ") + samples[5].timestamps + String(", \
+        ") + samples[5].angle + String(", \
+        ") + samples[5].speed + String(", \
+        ") + samples[5].pressure + String(", \
+        ") + samples[6].timestamps + String(", \
+        ") + samples[6].angle + String(", \
+        ") + samples[6].speed + String(", \
+        ") + samples[6].pressure + String(", \
+        ") + samples[7].timestamps + String(", \
+        ") + samples[7].angle + String(", \
+        ") + samples[7].speed + String(", \
+        ") + samples[7].pressure + String(", \
+        ") + samples[8].timestamps + String(", \
+        ") + samples[8].angle + String(", \
+        ") + samples[8].speed + String(", \
+        ") + samples[8].pressure + String(", \
+        ") + samples[9].timestamps + String(", \
+        ") + samples[9].angle + String(", \
+        ") + samples[9].speed + String(", \
+        ") + samples[9].pressure + String(", \
+        ") + samples[10].timestamps + String(", \
+        ") + samples[10].angle + String(", \
+        ") + samples[10].speed + String(", \
+        ") + samples[10].pressure + String(", \
+        ") + samples[11].timestamps + String(", \
+        ") + samples[11].angle + String(", \
+        ") + samples[11].speed + String(", \
+        ") + samples[11].pressure + String(", \
+        ") + samples[12].timestamps + String(", \
+        ") + samples[12].angle + String(", \
+        ") + samples[12].speed + String(", \
+        ") + samples[12].pressure + String(", \
+        ") + samples[13].timestamps + String(", \
+        ") + samples[13].angle + String(", \
+        ") + samples[13].speed + String(", \
+        ") + samples[13].pressure + String(", \
+        ") + samples[14].timestamps + String(", \
+        ") + samples[14].angle + String(", \
+        ") + samples[14].speed + String(", \
+        ") + samples[14].pressure + String(", \
+        ") + samples[15].timestamps + String(", \
+        ") + samples[15].angle + String(", \
+        ") + samples[15].speed + String(", \
+        ") + samples[15].pressure + String(" \
+    );");
+
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+void Db::updateX1Rising(const int id, const CalibrationSample* samples)
+{
+    // Update the bucket name
+    const String sql = String("\
+        UPDATE x1_rising \
+        SET \ 
+        t0 = ") + samples[0].timestamps + String(", \
+        a0 = ") + samples[0].angle + String(", \
+        s0 = ") + samples[0].speed + String(", \
+        p0 = ") + samples[0].pressure + String(", \
+        t1 = ") + samples[1].timestamps + String(", \
+        a1 = ") + samples[1].angle + String(", \
+        s1 = ") + samples[1].speed + String(", \
+        p1 = ") + samples[1].pressure + String(", \
+        t2 = ") + samples[2].timestamps + String(", \
+        a2 = ") + samples[2].angle + String(", \
+        s2 = ") + samples[2].speed + String(", \
+        p2 = ") + samples[2].pressure + String(", \
+        t3 = ") + samples[3].timestamps + String(", \
+        a3 = ") + samples[3].angle + String(", \
+        s3 = ") + samples[3].speed + String(", \
+        p3 = ") + samples[3].pressure + String(", \
+        t4 = ") + samples[4].timestamps + String(", \
+        a4 = ") + samples[4].angle + String(", \
+        s4 = ") + samples[4].speed + String(", \
+        p4 = ") + samples[4].pressure + String(", \
+        t5 = ") + samples[5].timestamps + String(", \
+        a5 = ") + samples[5].angle + String(", \
+        s5 = ") + samples[5].speed + String(", \
+        p5 = ") + samples[5].pressure + String(", \
+        t6 = ") + samples[6].timestamps + String(", \
+        a6 = ") + samples[6].angle + String(", \
+        s6 = ") + samples[6].speed + String(", \
+        p6 = ") + samples[6].pressure + String(", \
+        t7 = ") + samples[7].timestamps + String(", \
+        a7 = ") + samples[7].angle + String(", \
+        s7 = ") + samples[7].speed + String(", \
+        p7 = ") + samples[7].pressure + String(", \
+        t8 = ") + samples[8].timestamps + String(", \
+        a8 = ") + samples[8].angle + String(", \
+        s8 = ") + samples[8].speed + String(", \
+        p8 = ") + samples[8].pressure + String(", \
+        t9 = ") + samples[9].timestamps + String(", \
+        a9 = ") + samples[9].angle + String(", \
+        s9 = ") + samples[9].speed + String(", \
+        p9 = ") + samples[9].pressure + String(", \
+        t10 = ") + samples[10].timestamps + String(", \
+        a10 = ") + samples[10].angle + String(", \
+        s10 = ") + samples[10].speed + String(", \
+        p10 = ") + samples[10].pressure + String(", \
+        t11 = ") + samples[11].timestamps + String(", \
+        a11 = ") + samples[11].angle + String(", \
+        s11 = ") + samples[11].speed + String(", \
+        p11 = ") + samples[11].pressure + String(", \
+        t12 = ") + samples[12].timestamps + String(", \
+        a12 = ") + samples[12].angle + String(", \
+        s12 = ") + samples[12].speed + String(", \
+        p12 = ") + samples[12].pressure + String(", \
+        t13 = ") + samples[13].timestamps + String(", \
+        a13 = ") + samples[13].angle + String(", \
+        s13 = ") + samples[13].speed + String(", \
+        p13 = ") + samples[13].pressure + String(", \
+        t14 = ") + samples[14].timestamps + String(", \
+        a14 = ") + samples[14].angle + String(", \
+        s14 = ") + samples[14].speed + String(", \
+        p14 = ") + samples[14].pressure + String(", \
+        t15 = ") + samples[15].timestamps + String(", \
+        a15 = ") + samples[15].angle + String(", \
+        s15 = ") + samples[15].speed + String(", \
+        p15 = ") + samples[15].pressure + String(" \
+        WHERE id = ") + id + String(";");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+boolean Db::x1LoweringExists(const int id)
+{
+    const String sql = 
+    String("SELECT * FROM x1_lowering WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
+}
+
+void Db::addX1Lowering(const int id, const CalibrationSample* samples)
+{
+    // Insert the new bucket
+    const String sql = String("\
+    INSERT INTO x1_lowering (\
+        id,\
+        t0,\
+        a0,\
+        s0,\
+        p0,\
+        t1,\
+        a1,\
+        s1,\
+        p1,\
+        t2,\
+        a2,\
+        s2,\
+        p2,\
+        t3,\
+        a3,\
+        s3,\
+        p3,\
+        t4,\
+        a4,\
+        s4,\
+        p4,\
+        t5,\
+        a5,\
+        s5,\
+        p5,\
+        t6,\
+        a6,\
+        s6,\
+        p6,\
+        t7,\
+        a7,\
+        s7,\
+        p7,\
+        t8,\
+        a8,\
+        s8,\
+        p8,\
+        t9,\
+        a9,\
+        s9,\
+        p9,\
+        t10,\
+        a10,\
+        s10,\
+        p10,\
+        t11,\
+        a11,\
+        s11,\
+        p11,\
+        t12,\
+        a12,\
+        s12,\
+        p12,\
+        t13,\
+        a13,\
+        s13,\
+        p13,\
+        t14,\
+        a14,\
+        s14,\
+        p14,\
+        t15,\
+        a15,\
+        s15,\
+        p15\
+    )\
+    VALUES (\
+        ") + id + String(",\
+        ") + samples[0].timestamps + String(", \
+        ") + samples[0].angle + String(", \
+        ") + samples[0].speed + String(", \
+        ") + samples[0].pressure + String(", \
+        ") + samples[1].timestamps + String(", \
+        ") + samples[1].angle + String(", \
+        ") + samples[1].speed + String(", \
+        ") + samples[1].pressure + String(", \
+        ") + samples[2].timestamps + String(", \
+        ") + samples[2].angle + String(", \
+        ") + samples[2].speed + String(", \
+        ") + samples[2].pressure + String(", \
+        ") + samples[3].timestamps + String(", \
+        ") + samples[3].angle + String(", \
+        ") + samples[3].speed + String(", \
+        ") + samples[3].pressure + String(", \
+        ") + samples[4].timestamps + String(", \
+        ") + samples[4].angle + String(", \
+        ") + samples[4].speed + String(", \
+        ") + samples[4].pressure + String(", \
+        ") + samples[5].timestamps + String(", \
+        ") + samples[5].angle + String(", \
+        ") + samples[5].speed + String(", \
+        ") + samples[5].pressure + String(", \
+        ") + samples[6].timestamps + String(", \
+        ") + samples[6].angle + String(", \
+        ") + samples[6].speed + String(", \
+        ") + samples[6].pressure + String(", \
+        ") + samples[7].timestamps + String(", \
+        ") + samples[7].angle + String(", \
+        ") + samples[7].speed + String(", \
+        ") + samples[7].pressure + String(", \
+        ") + samples[8].timestamps + String(", \
+        ") + samples[8].angle + String(", \
+        ") + samples[8].speed + String(", \
+        ") + samples[8].pressure + String(", \
+        ") + samples[9].timestamps + String(", \
+        ") + samples[9].angle + String(", \
+        ") + samples[9].speed + String(", \
+        ") + samples[9].pressure + String(", \
+        ") + samples[10].timestamps + String(", \
+        ") + samples[10].angle + String(", \
+        ") + samples[10].speed + String(", \
+        ") + samples[10].pressure + String(", \
+        ") + samples[11].timestamps + String(", \
+        ") + samples[11].angle + String(", \
+        ") + samples[11].speed + String(", \
+        ") + samples[11].pressure + String(", \
+        ") + samples[12].timestamps + String(", \
+        ") + samples[12].angle + String(", \
+        ") + samples[12].speed + String(", \
+        ") + samples[12].pressure + String(", \
+        ") + samples[13].timestamps + String(", \
+        ") + samples[13].angle + String(", \
+        ") + samples[13].speed + String(", \
+        ") + samples[13].pressure + String(", \
+        ") + samples[14].timestamps + String(", \
+        ") + samples[14].angle + String(", \
+        ") + samples[14].speed + String(", \
+        ") + samples[14].pressure + String(", \
+        ") + samples[15].timestamps + String(", \
+        ") + samples[15].angle + String(", \
+        ") + samples[15].speed + String(", \
+        ") + samples[15].pressure + String(" \
+    );");
+
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+void Db::updateX1Lowering(const int id, const CalibrationSample* samples)
+{
+    // Update the bucket name
+    const String sql = String("\
+        UPDATE x1_lowering \
+        SET \ 
+        t0 = ") + samples[0].timestamps + String(", \
+        a0 = ") + samples[0].angle + String(", \
+        s0 = ") + samples[0].speed + String(", \
+        p0 = ") + samples[0].pressure + String(", \
+        t1 = ") + samples[1].timestamps + String(", \
+        a1 = ") + samples[1].angle + String(", \
+        s1 = ") + samples[1].speed + String(", \
+        p1 = ") + samples[1].pressure + String(", \
+        t2 = ") + samples[2].timestamps + String(", \
+        a2 = ") + samples[2].angle + String(", \
+        s2 = ") + samples[2].speed + String(", \
+        p2 = ") + samples[2].pressure + String(", \
+        t3 = ") + samples[3].timestamps + String(", \
+        a3 = ") + samples[3].angle + String(", \
+        s3 = ") + samples[3].speed + String(", \
+        p3 = ") + samples[3].pressure + String(", \
+        t4 = ") + samples[4].timestamps + String(", \
+        a4 = ") + samples[4].angle + String(", \
+        s4 = ") + samples[4].speed + String(", \
+        p4 = ") + samples[4].pressure + String(", \
+        t5 = ") + samples[5].timestamps + String(", \
+        a5 = ") + samples[5].angle + String(", \
+        s5 = ") + samples[5].speed + String(", \
+        p5 = ") + samples[5].pressure + String(", \
+        t6 = ") + samples[6].timestamps + String(", \
+        a6 = ") + samples[6].angle + String(", \
+        s6 = ") + samples[6].speed + String(", \
+        p6 = ") + samples[6].pressure + String(", \
+        t7 = ") + samples[7].timestamps + String(", \
+        a7 = ") + samples[7].angle + String(", \
+        s7 = ") + samples[7].speed + String(", \
+        p7 = ") + samples[7].pressure + String(", \
+        t8 = ") + samples[8].timestamps + String(", \
+        a8 = ") + samples[8].angle + String(", \
+        s8 = ") + samples[8].speed + String(", \
+        p8 = ") + samples[8].pressure + String(", \
+        t9 = ") + samples[9].timestamps + String(", \
+        a9 = ") + samples[9].angle + String(", \
+        s9 = ") + samples[9].speed + String(", \
+        p9 = ") + samples[9].pressure + String(", \
+        t10 = ") + samples[10].timestamps + String(", \
+        a10 = ") + samples[10].angle + String(", \
+        s10 = ") + samples[10].speed + String(", \
+        p10 = ") + samples[10].pressure + String(", \
+        t11 = ") + samples[11].timestamps + String(", \
+        a11 = ") + samples[11].angle + String(", \
+        s11 = ") + samples[11].speed + String(", \
+        p11 = ") + samples[11].pressure + String(", \
+        t12 = ") + samples[12].timestamps + String(", \
+        a12 = ") + samples[12].angle + String(", \
+        s12 = ") + samples[12].speed + String(", \
+        p12 = ") + samples[12].pressure + String(", \
+        t13 = ") + samples[13].timestamps + String(", \
+        a13 = ") + samples[13].angle + String(", \
+        s13 = ") + samples[13].speed + String(", \
+        p13 = ") + samples[13].pressure + String(", \
+        t14 = ") + samples[14].timestamps + String(", \
+        a14 = ") + samples[14].angle + String(", \
+        s14 = ") + samples[14].speed + String(", \
+        p14 = ") + samples[14].pressure + String(", \
+        t15 = ") + samples[15].timestamps + String(", \
+        a15 = ") + samples[15].angle + String(", \
+        s15 = ") + samples[15].speed + String(", \
+        p15 = ") + samples[15].pressure + String(" \
+        WHERE id = ") + id + String(";");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
 boolean Db::bucketExists(const int id)
 {
     const String sql = 
@@ -411,54 +1412,12 @@ void Db::deleteBucket(const int id)
 
 void Db::listBuckets(LISTBUCKETSCALLBACK callback)
 {
-    const String sql = String("SELECT * FROM buckets ORDER BY name ASC;");
+    const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
     char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
     {
-        int i = 0;
-
         // Create an instance of a bucket
-        Bucket bucket(String(argv[i++]).toInt(), argv[i++]);
-
-        bucket.globalCorrectionFactor = String(argv[i++]).toInt();
-        bucket.minAngle20x = String(argv[i++]).toInt();
-        bucket.resetAngle10x = String(argv[i++]).toInt();
-        bucket.addAngle10x = String(argv[i++]).toInt();
-        bucket.maxAngle10x = String(argv[i++]).toInt();
-        bucket.curve0WeightKg = String(argv[i++]).toInt();
-        bucket.curveX1WeightKg = String(argv[i++]).toInt();
-
-        // Curve0 rising
-        for (int j = 0; j < MAX_SAMPLES; j++) {
-            bucket.curve0Rising[j].timestamps = String(argv[i++]).toInt();
-            bucket.curve0Rising[j].angle = String(argv[i++]).toInt();
-            bucket.curve0Rising[j].speed = String(argv[i++]).toInt();
-            bucket.curve0Rising[j].pressure = String(argv[i++]).toInt();
-        }
-
-        // Curve0 lowering
-        for (int k = 0; k < MAX_SAMPLES; k++) {
-            bucket.curve0Lowering[k].timestamps = String(argv[i++]).toInt();
-            bucket.curve0Lowering[k].angle = String(argv[i++]).toInt();
-            bucket.curve0Lowering[k].speed = String(argv[i++]).toInt();
-            bucket.curve0Lowering[k].pressure = String(argv[i++]).toInt();
-        }
-
-        // CurveX1 rising
-        for (int l = 0; l < MAX_SAMPLES; l++) {
-            bucket.curveX1Rising[l].timestamps = String(argv[i++]).toInt();
-            bucket.curveX1Rising[l].angle = String(argv[i++]).toInt();
-            bucket.curveX1Rising[l].speed = String(argv[i++]).toInt();
-            bucket.curveX1Rising[l].pressure = String(argv[i++]).toInt();
-        }
-
-        // CurveX1 lowering
-        for (int m = 0; m < MAX_SAMPLES; m++) {
-            bucket.curveX1Lowering[m].timestamps = String(argv[i++]).toInt();
-            bucket.curveX1Lowering[m].angle = String(argv[i++]).toInt();
-            bucket.curveX1Lowering[m].speed = String(argv[i++]).toInt();
-            bucket.curveX1Lowering[m].pressure = String(argv[i++]).toInt();
-        }
+        Bucket bucket(String(argv[0]).toInt(), argv[1]);
 
         // Perform the callback 
         return ((LISTBUCKETSCALLBACK)data)(&bucket);
