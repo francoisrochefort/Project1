@@ -42,7 +42,8 @@ void Db::createDatabase()
             max_angle_10x            INTEGER NOT NULL, \
             c0_weight_kg             INTEGER NOT NULL, \
             x1_weight_kg             INTEGER NOT NULL, \
-            PRIMARY KEY('id')\
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE \
         );", 
         NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
@@ -115,7 +116,8 @@ void Db::createDatabase()
         a15  INTEGER NOT NULL, \
         s15  INTEGER NOT NULL, \
         p15  INTEGER NOT NULL, \
-        PRIMARY KEY('id')\
+        PRIMARY KEY('id'), \
+        FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE \
     );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
@@ -188,7 +190,8 @@ void Db::createDatabase()
         a15  INTEGER NOT NULL, \
         s15  INTEGER NOT NULL, \
         p15  INTEGER NOT NULL, \
-        PRIMARY KEY('id')\
+        PRIMARY KEY('id'), \
+        FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE \
     );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
@@ -261,7 +264,8 @@ void Db::createDatabase()
         a15  INTEGER NOT NULL, \
         s15  INTEGER NOT NULL, \
         p15  INTEGER NOT NULL, \
-        PRIMARY KEY('id')\
+        PRIMARY KEY('id'), \
+        FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE \
     );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
@@ -334,7 +338,8 @@ void Db::createDatabase()
         a15  INTEGER NOT NULL, \
         s15  INTEGER NOT NULL, \
         p15  INTEGER NOT NULL, \
-        PRIMARY KEY('id')\
+        PRIMARY KEY('id'), \
+        FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE \
     );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
@@ -368,6 +373,24 @@ void Db::createDatabase()
     android.onCreateDatabase();
 }
 
+int Db::getNextVal(Seq seq)
+{
+    // Select the sequence and increment it 
+    const String sql = String("\
+        SELECT val FROM sequences WHERE seq = ") + seq + String(";\
+        UPDATE sequences SET val = val + 1 WHERE seq = ") + seq + String(";");
+    char* errMsg = NULL;
+    int val = 0;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+        {
+            // Convert the val to an integer and return it
+            *((int*)data) = String(argv[0]).toInt();
+            return 0;
+        }, 
+        &val, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return val;
+}
 
 void Db::addBucket(const int id, const String& name) 
 {
@@ -403,25 +426,6 @@ int Db::getBucketId(const String& name)
     return id;
 }
 
-int Db::getNextVal(Seq seq)
-{
-    // Select the sequence and increment it 
-    const String sql = String("\
-        SELECT val FROM sequences WHERE seq = ") + seq + String(";\
-        UPDATE sequences SET val = val + 1 WHERE seq = ") + seq + String(";");
-    char* errMsg = NULL;
-    int val = 0;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-        {
-            // Convert the val to an integer and return it
-            *((int*)data) = String(argv[0]).toInt();
-            return 0;
-        }, 
-        &val, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return val;
-}
-
 void Db::updateBucket(const int id, const String& name)
 {
     // Update the bucket name
@@ -432,6 +436,49 @@ void Db::updateBucket(const int id, const String& name)
     ); 
     char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+boolean Db::bucketExists(const int id)
+{
+    const String sql = 
+    String("SELECT * FROM buckets WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
+}
+
+void Db::deleteBucket(const int id)
+{
+    // Delete the whole bucket
+    const String sql = 
+        String("DELETE FROM buckets WHERE id = ") + id + String(";"); 
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+void Db::listBuckets(LISTBUCKETSCALLBACK callback)
+{
+    const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // Create an instance of a bucket
+        Bucket bucket(String(argv[0]).toInt(), argv[1]);
+
+        // Perform the callback 
+        return ((LISTBUCKETSCALLBACK)data)(&bucket);
+    },
+    (void*)callback, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 }
 
@@ -1380,48 +1427,5 @@ void Db::updateX1Lowering(const int id, const CalibrationSample* samples)
         WHERE id = ") + id + String(";");
     char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-}
-
-boolean Db::bucketExists(const int id)
-{
-    const String sql = 
-    String("SELECT * FROM buckets WHERE id = ") + id + String(";");
-    boolean exists = false;
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // If the program gets here then the bucket exists
-        *((boolean*)data) = true;
-        return 0;
-    }, 
-    &exists, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return exists;
-}
-
-void Db::deleteBucket(const int id)
-{
-    // Delete the whole bucket
-    const String sql = 
-        String("DELETE FROM buckets WHERE id = ") + id + String(";"); 
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-}
-
-void Db::listBuckets(LISTBUCKETSCALLBACK callback)
-{
-    const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // Create an instance of a bucket
-        Bucket bucket(String(argv[0]).toInt(), argv[1]);
-
-        // Perform the callback 
-        return ((LISTBUCKETSCALLBACK)data)(&bucket);
-    },
-    (void*)callback, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 }

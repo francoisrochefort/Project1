@@ -82,6 +82,16 @@ enum Seq {
 
 const int MAX_CALIBRATION_SAMPLES = 16;
 
+typedef struct LimitSettings {
+    int global_correction_factor;
+    int min_angle_20x;
+    int reset_angle_10x;
+    int add_angle_10x;
+    int max_angle_10x;
+    int c0_weight_kg;
+    int x1_weight_kg;
+} LimitSettings;
+
 typedef struct CalibrationSample {
     int timestamps;
     int angle;
@@ -114,26 +124,34 @@ public:
     void addBucket(const int id, const String& name);
     int getBucketId(const String& name);
     void updateBucket(const int id, const String& name);
+    boolean bucketExists(const int id);
+    void deleteBucket(const int id);
+    void listBuckets(LISTBUCKETSCALLBACK callback);
+    
+    // Limit settings
+    boolean limitSettingsExist(const int id);
+    void addLimitSettings(const int id, const LimitSettings* settings);
+    void updateSettings(const int id, const LimitSettings* settings);
 
+    // Curve 0 rising
     boolean c0RisingExists(const int id);
     void addC0Rising(const int id, const CalibrationSample* samples);
     void updateC0Rising(const int id, const CalibrationSample* samples);
 
+    // Curve 0 lowering
     boolean c0LoweringExists(const int id);
     void addC0Lowering(const int id, const CalibrationSample* samples);
     void updateC0Lowering(const int id, const CalibrationSample* samples);
 
+    // Curve X1 rising
     boolean x1RisingExists(const int id);
     void addX1Rising(const int id, const CalibrationSample* samples);
     void updateX1Rising(const int id, const CalibrationSample* samples);
 
+    // Curve X1 lowering
     boolean x1LoweringExists(const int id);
     void addX1Lowering(const int id, const CalibrationSample* samples);
     void updateX1Lowering(const int id, const CalibrationSample* samples);
-
-    boolean bucketExists(const int id);
-    void deleteBucket(const int id);
-    void listBuckets(LISTBUCKETSCALLBACK callback);
 };
 
 class Bucket {
