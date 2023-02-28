@@ -482,6 +482,71 @@ void Db::listBuckets(LISTBUCKETSCALLBACK callback)
     ASSERT(rc == SQLITE_OK, errMsg);
 }
 
+boolean Db::limitSettingsExist(const int id)
+{
+    const String sql = 
+    String("SELECT * FROM limit_settings WHERE id = ") + id + String(";");
+    boolean exists = false;
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
+    {
+        // If the program gets here then the bucket exists
+        *((boolean*)data) = true;
+        return 0;
+    }, 
+    &exists, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+    return exists;
+}
+
+void Db::addLimitSettings(const int id, const LimitSettings* settings)
+{
+    const String sql = String("\
+        INSERT INTO limit_settings (\
+            id,\
+            global_correction_factor,\
+            min_angle_20x,\
+            reset_angle_10x,\
+            add_angle_10x,\
+            max_angle_10x,\
+            c0_weight_kg,\
+            x1_weight_kg \
+        )\
+        VALUES (\
+            ") + id + String(",\
+            ") + settings->global_correction_factor + String(", \
+            ") + settings->min_angle_20x + String(", \
+            ") + settings->reset_angle_10x + String(", \
+            ") + settings->add_angle_10x + String(", \
+            ") + settings->max_angle_10x + String(", \
+            ") + settings->c0_weight_kg + String(", \
+            ") + settings->x1_weight_kg + String(" \
+        );"
+    );
+
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
+void Db::updateLimitSettings(const int id, const LimitSettings* settings)
+{
+    const String sql = String("\
+        UPDATE limit_settings \
+        SET \ 
+            global_correction_factor = ") + settings->global_correction_factor + String(", \
+            min_angle_20x = ") + settings->min_angle_20x + String(", \
+            reset_angle_10x = ") + settings->reset_angle_10x + String(", \
+            add_angle_10x = ") + settings->add_angle_10x + String(", \
+            max_angle_10x = ") + settings->max_angle_10x + String(", \
+            c0_weight_kg = ") + settings->c0_weight_kg + String(", \
+            x1_weight_kg = ") + settings->x1_weight_kg + String(" \
+        WHERE id = ") + id + String(";");
+    char* errMsg = NULL;
+    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+}
+
 boolean Db::c0RisingExists(const int id)
 {
     const String sql = 

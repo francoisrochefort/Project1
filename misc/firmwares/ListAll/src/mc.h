@@ -127,11 +127,11 @@ public:
     boolean bucketExists(const int id);
     void deleteBucket(const int id);
     void listBuckets(LISTBUCKETSCALLBACK callback);
-    
+
     // Limit settings
     boolean limitSettingsExist(const int id);
     void addLimitSettings(const int id, const LimitSettings* settings);
-    void updateSettings(const int id, const LimitSettings* settings);
+    void updateLimitSettings(const int id, const LimitSettings* settings);
 
     // Curve 0 rising
     boolean c0RisingExists(const int id);
@@ -174,6 +174,7 @@ public:
     int addBucket(const String& name);
     Result updateBucket(const int id, const String& name);
 
+    Result setLimitSettings(const int id, const LimitSettings* settings);
     Result setC0Rising(const int id, const CalibrationSample* samples);
     Result setC0Lowering(const int id, const CalibrationSample* samples);
     Result setX1Rising(const int id, const CalibrationSample* samples);

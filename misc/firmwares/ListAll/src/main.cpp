@@ -106,6 +106,28 @@ void setup()
     }
     repo.setX1Lowering(id, samples);
 
+    // Test limit settings
+    LimitSettings settings1 = {
+        i++,
+        i++,
+        i++,
+        i++,
+        i++,
+        i++,
+        i++
+    };
+    repo.setLimitSettings(id, &settings1);
+    LimitSettings settings2 = {
+        i++,
+        i++,
+        i++,
+        i++,
+        i++,
+        i++,
+        i++
+    };
+    repo.setLimitSettings(id, &settings2);
+
     Serial.println("C'est tigidoo!");
 }
 

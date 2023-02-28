@@ -41,6 +41,31 @@ Result BucketRepository::updateBucket(const int id, const String& name)
     return Succeeded;
 }
 
+Result BucketRepository::setLimitSettings(const int id, const LimitSettings* settings)
+{
+    // Check if the bucket exists
+    if (!db.bucketExists(id)) {
+
+        // Return the error
+        return ObjectDoesNotExists;
+    }
+
+    // Add or update limit settings accordingly
+    if (!db.limitSettingsExist(id)) {
+
+        // Insert limit settings
+        Serial.println("j'ajoute les ti-samples limit_settings");
+        db.addLimitSettings(id, settings);
+    }
+    else {
+
+        // Update limit settings
+        Serial.println("j'update les ti-samples limit_settings");
+        db.updateLimitSettings(id, settings);
+    }
+    return Succeeded;
+}
+
 Result BucketRepository::setC0Rising(const int id, const CalibrationSample* samples)
 {
     // Check if the bucket exists
