@@ -51,7 +51,7 @@ void Db::createDatabase()
     // Create the c0_rising table 
     rc = sqlite3_exec(db, "\
         CREATE TABLE c0_rising( \
-        id INTEGER NOT NULL NOT NULL, \
+        id  INTEGER NOT NULL, \
         t0  INTEGER NOT NULL, \
         a0  INTEGER NOT NULL, \
         s0  INTEGER NOT NULL, \
@@ -125,7 +125,7 @@ void Db::createDatabase()
     // Create the c0_lowering table 
     rc = sqlite3_exec(db, "\
         CREATE TABLE c0_lowering( \
-        id INTEGER NOT NULL NOT NULL, \
+        id  INTEGER NOT NULL, \
         t0  INTEGER NOT NULL, \
         a0  INTEGER NOT NULL, \
         s0  INTEGER NOT NULL, \
@@ -199,7 +199,7 @@ void Db::createDatabase()
     // Create the x1_rising table 
     rc = sqlite3_exec(db, "\
         CREATE TABLE x1_rising( \
-        id INTEGER NOT NULL NOT NULL, \
+        id  INTEGER NOT NULL, \
         t0  INTEGER NOT NULL, \
         a0  INTEGER NOT NULL, \
         s0  INTEGER NOT NULL, \
@@ -273,7 +273,7 @@ void Db::createDatabase()
     // Create the x1_lowering table 
     rc = sqlite3_exec(db, "\
         CREATE TABLE x1_lowering( \
-        id INTEGER NOT NULL NOT NULL, \
+        id  INTEGER NOT NULL, \
         t0  INTEGER NOT NULL, \
         a0  INTEGER NOT NULL, \
         s0  INTEGER NOT NULL, \
