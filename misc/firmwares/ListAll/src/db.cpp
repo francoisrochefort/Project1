@@ -145,76 +145,49 @@ int Db::getNextVal(Seq seq)
 
 void Db::addBucket(const int id, const String& name) 
 {
-    // Insert the new bucket
-    const String sql = String("\
-        INSERT INTO buckets (\
-            id, \
-            name\
-        )\
-        VALUES (\
-            " + String(id) + ", \
-            '") + name + String("'\
-        );"
-    ); 
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO buckets (id, name) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, name.c_str());
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
 int Db::getBucketId(const String& name)
 {
-    const String sql = String("SELECT id FROM buckets WHERE name = '") + name + String("'");
-    int id = NoRecordFound;
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // if there is no bucket matching the given name then return NoRecordFound
-        *((int*)data) = argv[0] ? String(argv[0]).toInt() : NoRecordFound;;
-        return 0;
-    }
-    , &id, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return id;
+    Statement stmt(db);
+    stmt.prepare("SELECT id FROM buckets WHERE name = ?");
+    stmt.bind(1, name.c_str());
+    int rc = stmt.step();
+    return rc == SQLITE_DONE ? NoRecordFound : stmt.getColumnInt(1);
 }
 
 void Db::updateBucket(const int id, const String& name)
 {
-    // Update the bucket name
-    const String sql = String("\
-        UPDATE buckets \
-        SET name = '") + name + String("' \
-        WHERE id = ") + id + String(";"
-    ); 
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("UPDATE buckets SET name = ? WHERE id = ?");
+    stmt.bind(1, name.c_str());
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
 boolean Db::bucketExists(const int id)
 {
-    const String sql = 
-    String("SELECT * FROM buckets WHERE id = ") + id + String(";");
-    boolean exists = false;
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // If the program gets here then the bucket exists
-        *((boolean*)data) = true;
-        return 0;
-    }, 
-    &exists, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return exists;
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM buckets WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
 }
 
 void Db::deleteBucket(const int id)
 {
-    // Delete the whole bucket
-    const String sql = 
-        String("DELETE FROM buckets WHERE id = ") + id + String(";"); 
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("DELETE FROM buckets WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
 void Db::listBuckets(LISTBUCKETSCALLBACK callback)
@@ -223,10 +196,8 @@ void Db::listBuckets(LISTBUCKETSCALLBACK callback)
     char* errMsg = NULL;
     int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
     {
-        // Create an instance of a bucket
+        // Create an instance of a bucket and return it
         Bucket bucket(String(argv[0]).toInt(), argv[1]);
-
-        // Perform the callback 
         return ((LISTBUCKETSCALLBACK)data)(&bucket);
     },
     (void*)callback, &errMsg);
@@ -235,24 +206,17 @@ void Db::listBuckets(LISTBUCKETSCALLBACK callback)
 
 boolean Db::limitSettingsExist(const int id)
 {
-    const String sql = 
-    String("SELECT * FROM limit_settings WHERE id = ") + id + String(";");
-    boolean exists = false;
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // If the program gets here then the bucket exists
-        *((boolean*)data) = true;
-        return 0;
-    }, 
-    &exists, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return exists;
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM limit_settings WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
 }
 
 void Db::addLimitSettings(const int id, const LimitSettings* settings)
 {
-    const String sql = String("\
+    Statement stmt(db);
+    stmt.prepare("\
         INSERT INTO limit_settings (\
             id,\
             global_correction_factor,\
@@ -261,657 +225,172 @@ void Db::addLimitSettings(const int id, const LimitSettings* settings)
             add_angle_10x,\
             max_angle_10x,\
             c0_weight_kg,\
-            x1_weight_kg \
+            x1_weight_kg\
         )\
         VALUES (\
-            ") + id + String(",\
-            ") + settings->global_correction_factor + String(", \
-            ") + settings->min_angle_20x + String(", \
-            ") + settings->reset_angle_10x + String(", \
-            ") + settings->add_angle_10x + String(", \
-            ") + settings->max_angle_10x + String(", \
-            ") + settings->c0_weight_kg + String(", \
-            ") + settings->x1_weight_kg + String(" \
-        );"
-    );
-
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+            ?,\
+            ?,\
+            ?,\
+            ?,\
+            ?,\
+            ?,\
+            ?,\
+            ?\
+        );");
+    stmt.bind(1, id);
+    stmt.bind(2, settings->global_correction_factor);
+    stmt.bind(3, settings->min_angle_20x);
+    stmt.bind(4, settings->reset_angle_10x);
+    stmt.bind(5, settings->add_angle_10x);
+    stmt.bind(6, settings->max_angle_10x);
+    stmt.bind(7, settings->c0_weight_kg);
+    stmt.bind(8, settings->x1_weight_kg);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
 void Db::updateLimitSettings(const int id, const LimitSettings* settings)
 {
-    const String sql = String("\
+    Statement stmt(db);
+    stmt.prepare("\
         UPDATE limit_settings \
         SET \ 
-            global_correction_factor = ") + settings->global_correction_factor + String(", \
-            min_angle_20x = ") + settings->min_angle_20x + String(", \
-            reset_angle_10x = ") + settings->reset_angle_10x + String(", \
-            add_angle_10x = ") + settings->add_angle_10x + String(", \
-            max_angle_10x = ") + settings->max_angle_10x + String(", \
-            c0_weight_kg = ") + settings->c0_weight_kg + String(", \
-            x1_weight_kg = ") + settings->x1_weight_kg + String(" \
-        WHERE id = ") + id + String(";");
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+            global_correction_factor = ?,\
+            min_angle_20x = ?,\
+            reset_angle_10x = ?,\
+            add_angle_10x = ?,\
+            max_angle_10x = ?,\
+            c0_weight_kg = ?,\
+            x1_weight_kg = ?\
+        WHERE id = ?");
+    stmt.bind(1, settings->global_correction_factor);
+    stmt.bind(2, settings->min_angle_20x);
+    stmt.bind(3, settings->reset_angle_10x);
+    stmt.bind(4, settings->add_angle_10x);
+    stmt.bind(5, settings->max_angle_10x);
+    stmt.bind(6, settings->c0_weight_kg);
+    stmt.bind(7, settings->x1_weight_kg);
+    stmt.bind(8, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
+// Curve 0 rising
 boolean Db::c0RisingExists(const int id)
 {
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    const char* tail;
-    const char* sql = "SELECT * FROM c0_rising WHERE id = ?";
-    int rc = sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, &tail);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Bind statement parameters
-    rc = sqlite3_bind_int(stmt, 1, id);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Execute the statement
-    rc = sqlite3_step(stmt);
-    // ASSERT(rc == SQLITE_ROW || rc == SQLITE_DONE, sqlite3_errmsg(db));
-
-    // Delete the statement from memory  
-    sqlite3_finalize(stmt);
-
-    // Compute the return value accordingly
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM c0_rising WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
     return rc == SQLITE_ROW ? true : false;
 }
 
 void Db::addC0Rising(const int id, const CalibrationSample* samples)
 {
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    const char* tail;
-    const char* sql = "INSERT INTO c0_rising (id, samples) VALUES (?, ?)";
-    int rc = sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, &tail);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Bind statement parameters
-    rc = sqlite3_bind_int(stmt, 1, id);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-    rc = sqlite3_bind_blob(stmt, 2, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES, SQLITE_STATIC);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Execute the statement
-    rc = sqlite3_step(stmt);
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO c0_rising (id, samples) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
-
-    // Delete the statement from memory  
-    sqlite3_finalize(stmt);
-    // rc = db_exec(db, "SELECT id, length(samples), SUBSTR(samples, 1, 10) FROM c0_rising");
 }
 
 void Db::updateC0Rising(const int id, const CalibrationSample* samples)
 {
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    const char* tail;
-    const char* sql = "UPDATE c0_rising SET samples = ? WHERE id = ?";
-    int rc = sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, &tail);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Bind statement parameters
-    rc = sqlite3_bind_blob(stmt, 1, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES, SQLITE_STATIC);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-    rc = sqlite3_bind_int(stmt, 2, id);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Execute the statement
-    rc = sqlite3_step(stmt);
+    Statement stmt(db);
+    stmt.prepare("UPDATE c0_rising SET samples = ? WHERE id = ?");
+    stmt.bind(1, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
-
-    // Delete the statement from memory  
-    sqlite3_finalize(stmt);
-    // rc = db_exec(db, "SELECT id, length(samples), SUBSTR(samples, 1, 10) FROM c0_rising");
 }
 
+// Curve 0 lowering
 boolean Db::c0LoweringExists(const int id)
 {
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    const char* tail;
-    const char* sql = "SELECT * FROM c0_lowering WHERE id = ?";
-    int rc = sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, &tail);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Bind statement parameters
-    rc = sqlite3_bind_int(stmt, 1, id);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Execute the statement
-    rc = sqlite3_step(stmt);
-    // ASSERT(rc == SQLITE_ROW || rc == SQLITE_DONE, sqlite3_errmsg(db));
-
-    // Delete the statement from memory  
-    sqlite3_finalize(stmt);
-
-    // Compute the return value accordingly
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM c0_lowering WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
     return rc == SQLITE_ROW ? true : false;
 }
 
 void Db::addC0Lowering(const int id, const CalibrationSample* samples)
 {
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    const char* tail;
-    const char* sql = "INSERT INTO c0_lowering (id, samples) VALUES (?, ?)";
-    int rc = sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, &tail);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Bind statement parameters
-    rc = sqlite3_bind_int(stmt, 1, id);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-    rc = sqlite3_bind_blob(stmt, 2, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES, SQLITE_STATIC);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Execute the statement
-    rc = sqlite3_step(stmt);
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO c0_lowering (id, samples) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
-
-    // Delete the statement from memory  
-    sqlite3_finalize(stmt);
-    // rc = db_exec(db, "SELECT id, length(samples), SUBSTR(samples, 1, 10) FROM c0_lowering");
 }
 
 void Db::updateC0Lowering(const int id, const CalibrationSample* samples)
 {
-    // Prepare the SQL statement
-    sqlite3_stmt* stmt;
-    const char* tail;
-    const char* sql = "UPDATE c0_lowering SET samples = ? WHERE id = ?";
-    int rc = sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, &tail);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Bind statement parameters
-    rc = sqlite3_bind_blob(stmt, 1, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES, SQLITE_STATIC);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-    rc = sqlite3_bind_int(stmt, 2, id);
-    ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
-
-    // Execute the statement
-    rc = sqlite3_step(stmt);
+    Statement stmt(db);
+    stmt.prepare("UPDATE c0_lowering SET samples = ? WHERE id = ?");
+    stmt.bind(1, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
-
-    // Delete the statement from memory  
-    sqlite3_finalize(stmt);
-    // rc = db_exec(db, "SELECT id, length(samples), SUBSTR(samples, 1, 10) FROM c0_lowering");
 }
 
+// Curve X1 rising
 boolean Db::x1RisingExists(const int id)
 {
-    const String sql = 
-    String("SELECT * FROM x1_rising WHERE id = ") + id + String(";");
-    boolean exists = false;
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // If the program gets here then the bucket exists
-        *((boolean*)data) = true;
-        return 0;
-    }, 
-    &exists, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return exists;
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM x1_rising WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
 }
 
 void Db::addX1Rising(const int id, const CalibrationSample* samples)
 {
-    // Insert the new bucket
-    const String sql = String("\
-    INSERT INTO x1_rising (\
-        id,\
-        t0,\
-        a0,\
-        s0,\
-        p0,\
-        t1,\
-        a1,\
-        s1,\
-        p1,\
-        t2,\
-        a2,\
-        s2,\
-        p2,\
-        t3,\
-        a3,\
-        s3,\
-        p3,\
-        t4,\
-        a4,\
-        s4,\
-        p4,\
-        t5,\
-        a5,\
-        s5,\
-        p5,\
-        t6,\
-        a6,\
-        s6,\
-        p6,\
-        t7,\
-        a7,\
-        s7,\
-        p7,\
-        t8,\
-        a8,\
-        s8,\
-        p8,\
-        t9,\
-        a9,\
-        s9,\
-        p9,\
-        t10,\
-        a10,\
-        s10,\
-        p10,\
-        t11,\
-        a11,\
-        s11,\
-        p11,\
-        t12,\
-        a12,\
-        s12,\
-        p12,\
-        t13,\
-        a13,\
-        s13,\
-        p13,\
-        t14,\
-        a14,\
-        s14,\
-        p14,\
-        t15,\
-        a15,\
-        s15,\
-        p15\
-    )\
-    VALUES (\
-        ") + id + String(",\
-        ") + samples[0].timestamps + String(", \
-        ") + samples[0].angle + String(", \
-        ") + samples[0].speed + String(", \
-        ") + samples[0].pressure + String(", \
-        ") + samples[1].timestamps + String(", \
-        ") + samples[1].angle + String(", \
-        ") + samples[1].speed + String(", \
-        ") + samples[1].pressure + String(", \
-        ") + samples[2].timestamps + String(", \
-        ") + samples[2].angle + String(", \
-        ") + samples[2].speed + String(", \
-        ") + samples[2].pressure + String(", \
-        ") + samples[3].timestamps + String(", \
-        ") + samples[3].angle + String(", \
-        ") + samples[3].speed + String(", \
-        ") + samples[3].pressure + String(", \
-        ") + samples[4].timestamps + String(", \
-        ") + samples[4].angle + String(", \
-        ") + samples[4].speed + String(", \
-        ") + samples[4].pressure + String(", \
-        ") + samples[5].timestamps + String(", \
-        ") + samples[5].angle + String(", \
-        ") + samples[5].speed + String(", \
-        ") + samples[5].pressure + String(", \
-        ") + samples[6].timestamps + String(", \
-        ") + samples[6].angle + String(", \
-        ") + samples[6].speed + String(", \
-        ") + samples[6].pressure + String(", \
-        ") + samples[7].timestamps + String(", \
-        ") + samples[7].angle + String(", \
-        ") + samples[7].speed + String(", \
-        ") + samples[7].pressure + String(", \
-        ") + samples[8].timestamps + String(", \
-        ") + samples[8].angle + String(", \
-        ") + samples[8].speed + String(", \
-        ") + samples[8].pressure + String(", \
-        ") + samples[9].timestamps + String(", \
-        ") + samples[9].angle + String(", \
-        ") + samples[9].speed + String(", \
-        ") + samples[9].pressure + String(", \
-        ") + samples[10].timestamps + String(", \
-        ") + samples[10].angle + String(", \
-        ") + samples[10].speed + String(", \
-        ") + samples[10].pressure + String(", \
-        ") + samples[11].timestamps + String(", \
-        ") + samples[11].angle + String(", \
-        ") + samples[11].speed + String(", \
-        ") + samples[11].pressure + String(", \
-        ") + samples[12].timestamps + String(", \
-        ") + samples[12].angle + String(", \
-        ") + samples[12].speed + String(", \
-        ") + samples[12].pressure + String(", \
-        ") + samples[13].timestamps + String(", \
-        ") + samples[13].angle + String(", \
-        ") + samples[13].speed + String(", \
-        ") + samples[13].pressure + String(", \
-        ") + samples[14].timestamps + String(", \
-        ") + samples[14].angle + String(", \
-        ") + samples[14].speed + String(", \
-        ") + samples[14].pressure + String(", \
-        ") + samples[15].timestamps + String(", \
-        ") + samples[15].angle + String(", \
-        ") + samples[15].speed + String(", \
-        ") + samples[15].pressure + String(" \
-    );");
-
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO x1_rising (id, samples) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
 void Db::updateX1Rising(const int id, const CalibrationSample* samples)
 {
-    // Update the bucket name
-    const String sql = String("\
-        UPDATE x1_rising \
-        SET \ 
-        t0 = ") + samples[0].timestamps + String(", \
-        a0 = ") + samples[0].angle + String(", \
-        s0 = ") + samples[0].speed + String(", \
-        p0 = ") + samples[0].pressure + String(", \
-        t1 = ") + samples[1].timestamps + String(", \
-        a1 = ") + samples[1].angle + String(", \
-        s1 = ") + samples[1].speed + String(", \
-        p1 = ") + samples[1].pressure + String(", \
-        t2 = ") + samples[2].timestamps + String(", \
-        a2 = ") + samples[2].angle + String(", \
-        s2 = ") + samples[2].speed + String(", \
-        p2 = ") + samples[2].pressure + String(", \
-        t3 = ") + samples[3].timestamps + String(", \
-        a3 = ") + samples[3].angle + String(", \
-        s3 = ") + samples[3].speed + String(", \
-        p3 = ") + samples[3].pressure + String(", \
-        t4 = ") + samples[4].timestamps + String(", \
-        a4 = ") + samples[4].angle + String(", \
-        s4 = ") + samples[4].speed + String(", \
-        p4 = ") + samples[4].pressure + String(", \
-        t5 = ") + samples[5].timestamps + String(", \
-        a5 = ") + samples[5].angle + String(", \
-        s5 = ") + samples[5].speed + String(", \
-        p5 = ") + samples[5].pressure + String(", \
-        t6 = ") + samples[6].timestamps + String(", \
-        a6 = ") + samples[6].angle + String(", \
-        s6 = ") + samples[6].speed + String(", \
-        p6 = ") + samples[6].pressure + String(", \
-        t7 = ") + samples[7].timestamps + String(", \
-        a7 = ") + samples[7].angle + String(", \
-        s7 = ") + samples[7].speed + String(", \
-        p7 = ") + samples[7].pressure + String(", \
-        t8 = ") + samples[8].timestamps + String(", \
-        a8 = ") + samples[8].angle + String(", \
-        s8 = ") + samples[8].speed + String(", \
-        p8 = ") + samples[8].pressure + String(", \
-        t9 = ") + samples[9].timestamps + String(", \
-        a9 = ") + samples[9].angle + String(", \
-        s9 = ") + samples[9].speed + String(", \
-        p9 = ") + samples[9].pressure + String(", \
-        t10 = ") + samples[10].timestamps + String(", \
-        a10 = ") + samples[10].angle + String(", \
-        s10 = ") + samples[10].speed + String(", \
-        p10 = ") + samples[10].pressure + String(", \
-        t11 = ") + samples[11].timestamps + String(", \
-        a11 = ") + samples[11].angle + String(", \
-        s11 = ") + samples[11].speed + String(", \
-        p11 = ") + samples[11].pressure + String(", \
-        t12 = ") + samples[12].timestamps + String(", \
-        a12 = ") + samples[12].angle + String(", \
-        s12 = ") + samples[12].speed + String(", \
-        p12 = ") + samples[12].pressure + String(", \
-        t13 = ") + samples[13].timestamps + String(", \
-        a13 = ") + samples[13].angle + String(", \
-        s13 = ") + samples[13].speed + String(", \
-        p13 = ") + samples[13].pressure + String(", \
-        t14 = ") + samples[14].timestamps + String(", \
-        a14 = ") + samples[14].angle + String(", \
-        s14 = ") + samples[14].speed + String(", \
-        p14 = ") + samples[14].pressure + String(", \
-        t15 = ") + samples[15].timestamps + String(", \
-        a15 = ") + samples[15].angle + String(", \
-        s15 = ") + samples[15].speed + String(", \
-        p15 = ") + samples[15].pressure + String(" \
-        WHERE id = ") + id + String(";");
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("UPDATE x1_rising SET samples = ? WHERE id = ?");
+    stmt.bind(1, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
+// Curve X1 lowering
 boolean Db::x1LoweringExists(const int id)
 {
-    const String sql = 
-    String("SELECT * FROM x1_lowering WHERE id = ") + id + String(";");
-    boolean exists = false;
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // If the program gets here then the bucket exists
-        *((boolean*)data) = true;
-        return 0;
-    }, 
-    &exists, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
-    return exists;
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM x1_lowering WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
 }
 
 void Db::addX1Lowering(const int id, const CalibrationSample* samples)
 {
-    // Insert the new bucket
-    const String sql = String("\
-    INSERT INTO x1_lowering (\
-        id,\
-        t0,\
-        a0,\
-        s0,\
-        p0,\
-        t1,\
-        a1,\
-        s1,\
-        p1,\
-        t2,\
-        a2,\
-        s2,\
-        p2,\
-        t3,\
-        a3,\
-        s3,\
-        p3,\
-        t4,\
-        a4,\
-        s4,\
-        p4,\
-        t5,\
-        a5,\
-        s5,\
-        p5,\
-        t6,\
-        a6,\
-        s6,\
-        p6,\
-        t7,\
-        a7,\
-        s7,\
-        p7,\
-        t8,\
-        a8,\
-        s8,\
-        p8,\
-        t9,\
-        a9,\
-        s9,\
-        p9,\
-        t10,\
-        a10,\
-        s10,\
-        p10,\
-        t11,\
-        a11,\
-        s11,\
-        p11,\
-        t12,\
-        a12,\
-        s12,\
-        p12,\
-        t13,\
-        a13,\
-        s13,\
-        p13,\
-        t14,\
-        a14,\
-        s14,\
-        p14,\
-        t15,\
-        a15,\
-        s15,\
-        p15\
-    )\
-    VALUES (\
-        ") + id + String(",\
-        ") + samples[0].timestamps + String(", \
-        ") + samples[0].angle + String(", \
-        ") + samples[0].speed + String(", \
-        ") + samples[0].pressure + String(", \
-        ") + samples[1].timestamps + String(", \
-        ") + samples[1].angle + String(", \
-        ") + samples[1].speed + String(", \
-        ") + samples[1].pressure + String(", \
-        ") + samples[2].timestamps + String(", \
-        ") + samples[2].angle + String(", \
-        ") + samples[2].speed + String(", \
-        ") + samples[2].pressure + String(", \
-        ") + samples[3].timestamps + String(", \
-        ") + samples[3].angle + String(", \
-        ") + samples[3].speed + String(", \
-        ") + samples[3].pressure + String(", \
-        ") + samples[4].timestamps + String(", \
-        ") + samples[4].angle + String(", \
-        ") + samples[4].speed + String(", \
-        ") + samples[4].pressure + String(", \
-        ") + samples[5].timestamps + String(", \
-        ") + samples[5].angle + String(", \
-        ") + samples[5].speed + String(", \
-        ") + samples[5].pressure + String(", \
-        ") + samples[6].timestamps + String(", \
-        ") + samples[6].angle + String(", \
-        ") + samples[6].speed + String(", \
-        ") + samples[6].pressure + String(", \
-        ") + samples[7].timestamps + String(", \
-        ") + samples[7].angle + String(", \
-        ") + samples[7].speed + String(", \
-        ") + samples[7].pressure + String(", \
-        ") + samples[8].timestamps + String(", \
-        ") + samples[8].angle + String(", \
-        ") + samples[8].speed + String(", \
-        ") + samples[8].pressure + String(", \
-        ") + samples[9].timestamps + String(", \
-        ") + samples[9].angle + String(", \
-        ") + samples[9].speed + String(", \
-        ") + samples[9].pressure + String(", \
-        ") + samples[10].timestamps + String(", \
-        ") + samples[10].angle + String(", \
-        ") + samples[10].speed + String(", \
-        ") + samples[10].pressure + String(", \
-        ") + samples[11].timestamps + String(", \
-        ") + samples[11].angle + String(", \
-        ") + samples[11].speed + String(", \
-        ") + samples[11].pressure + String(", \
-        ") + samples[12].timestamps + String(", \
-        ") + samples[12].angle + String(", \
-        ") + samples[12].speed + String(", \
-        ") + samples[12].pressure + String(", \
-        ") + samples[13].timestamps + String(", \
-        ") + samples[13].angle + String(", \
-        ") + samples[13].speed + String(", \
-        ") + samples[13].pressure + String(", \
-        ") + samples[14].timestamps + String(", \
-        ") + samples[14].angle + String(", \
-        ") + samples[14].speed + String(", \
-        ") + samples[14].pressure + String(", \
-        ") + samples[15].timestamps + String(", \
-        ") + samples[15].angle + String(", \
-        ") + samples[15].speed + String(", \
-        ") + samples[15].pressure + String(" \
-    );");
-
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO x1_lowering (id, samples) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
 
 void Db::updateX1Lowering(const int id, const CalibrationSample* samples)
 {
-    // Update the bucket name
-    const String sql = String("\
-        UPDATE x1_lowering \
-        SET \ 
-        t0 = ") + samples[0].timestamps + String(", \
-        a0 = ") + samples[0].angle + String(", \
-        s0 = ") + samples[0].speed + String(", \
-        p0 = ") + samples[0].pressure + String(", \
-        t1 = ") + samples[1].timestamps + String(", \
-        a1 = ") + samples[1].angle + String(", \
-        s1 = ") + samples[1].speed + String(", \
-        p1 = ") + samples[1].pressure + String(", \
-        t2 = ") + samples[2].timestamps + String(", \
-        a2 = ") + samples[2].angle + String(", \
-        s2 = ") + samples[2].speed + String(", \
-        p2 = ") + samples[2].pressure + String(", \
-        t3 = ") + samples[3].timestamps + String(", \
-        a3 = ") + samples[3].angle + String(", \
-        s3 = ") + samples[3].speed + String(", \
-        p3 = ") + samples[3].pressure + String(", \
-        t4 = ") + samples[4].timestamps + String(", \
-        a4 = ") + samples[4].angle + String(", \
-        s4 = ") + samples[4].speed + String(", \
-        p4 = ") + samples[4].pressure + String(", \
-        t5 = ") + samples[5].timestamps + String(", \
-        a5 = ") + samples[5].angle + String(", \
-        s5 = ") + samples[5].speed + String(", \
-        p5 = ") + samples[5].pressure + String(", \
-        t6 = ") + samples[6].timestamps + String(", \
-        a6 = ") + samples[6].angle + String(", \
-        s6 = ") + samples[6].speed + String(", \
-        p6 = ") + samples[6].pressure + String(", \
-        t7 = ") + samples[7].timestamps + String(", \
-        a7 = ") + samples[7].angle + String(", \
-        s7 = ") + samples[7].speed + String(", \
-        p7 = ") + samples[7].pressure + String(", \
-        t8 = ") + samples[8].timestamps + String(", \
-        a8 = ") + samples[8].angle + String(", \
-        s8 = ") + samples[8].speed + String(", \
-        p8 = ") + samples[8].pressure + String(", \
-        t9 = ") + samples[9].timestamps + String(", \
-        a9 = ") + samples[9].angle + String(", \
-        s9 = ") + samples[9].speed + String(", \
-        p9 = ") + samples[9].pressure + String(", \
-        t10 = ") + samples[10].timestamps + String(", \
-        a10 = ") + samples[10].angle + String(", \
-        s10 = ") + samples[10].speed + String(", \
-        p10 = ") + samples[10].pressure + String(", \
-        t11 = ") + samples[11].timestamps + String(", \
-        a11 = ") + samples[11].angle + String(", \
-        s11 = ") + samples[11].speed + String(", \
-        p11 = ") + samples[11].pressure + String(", \
-        t12 = ") + samples[12].timestamps + String(", \
-        a12 = ") + samples[12].angle + String(", \
-        s12 = ") + samples[12].speed + String(", \
-        p12 = ") + samples[12].pressure + String(", \
-        t13 = ") + samples[13].timestamps + String(", \
-        a13 = ") + samples[13].angle + String(", \
-        s13 = ") + samples[13].speed + String(", \
-        p13 = ") + samples[13].pressure + String(", \
-        t14 = ") + samples[14].timestamps + String(", \
-        a14 = ") + samples[14].angle + String(", \
-        s14 = ") + samples[14].speed + String(", \
-        p14 = ") + samples[14].pressure + String(", \
-        t15 = ") + samples[15].timestamps + String(", \
-        a15 = ") + samples[15].angle + String(", \
-        s15 = ") + samples[15].speed + String(", \
-        p15 = ") + samples[15].pressure + String(" \
-        WHERE id = ") + id + String(";");
-    char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
-    ASSERT(rc == SQLITE_OK, errMsg);
+    Statement stmt(db);
+    stmt.prepare("UPDATE x1_lowering SET samples = ? WHERE id = ?");
+    stmt.bind(1, samples, sizeof(CalibrationSample) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }

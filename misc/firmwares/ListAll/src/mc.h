@@ -18,6 +18,7 @@ class Context;
 class State;
 class AsleepState;
 class Db;
+class Statement;
 class Bucket;
 class BucketRepository;
 class Message;
@@ -92,12 +93,14 @@ typedef struct LimitSettings {
     int x1_weight_kg;
 } LimitSettings;
 
-typedef struct CalibrationSample {
+typedef struct CalibrationSample 
+{
     int timestamps;
     int angle;
     int speed;
     int pressure;
-} CalibrationSample;
+} 
+CalibrationSample;
 
 class Db {
 
@@ -154,6 +157,26 @@ public:
     void updateX1Lowering(const int id, const CalibrationSample* samples);
 };
 
+// Statement wrapper
+class Statement {
+
+    sqlite3* db;
+    sqlite3_stmt* stmt;
+
+public:
+
+    Statement(sqlite3* db);
+    ~Statement();
+    void prepare(const char* sql);
+    void bind(int index, int value);
+    void bind(int index, const void* blob, int cb);
+    void bind(int index, const char* text);
+
+    int getColumnInt(int index);
+
+    int step();
+};
+
 class Bucket {
 
     int id;
@@ -165,7 +188,6 @@ public:
     String getName();
     virtual ~Bucket();
 };
-
 
 class BucketRepository {
 
