@@ -1,31 +1,31 @@
 #include <mc.h>
 
-const char* data = "Callback function called";
-static int callback(void *data, int argc, char **argv, char **azColName){
-   int i;
-   Serial.printf("%s: ", (const char*)data);
-   for (i = 0; i<argc; i++){
-       Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   }
-   Serial.printf("\n");
-   return 0;
-}
+// const char* data = "Callback function called";
+// static int callback(void *data, int argc, char **argv, char **azColName){
+//    int i;
+//    Serial.printf("%s: ", (const char*)data);
+//    for (i = 0; i<argc; i++){
+//        Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+//    }
+//    Serial.printf("\n");
+//    return 0;
+// }
 
-char *zErrMsg = 0;
-int db_exec(sqlite3 *db, const char *sql) {
-   Serial.println(sql);
-   long start = micros();
-   int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-   if (rc != SQLITE_OK) {
-       Serial.printf("SQL error: %s\n", zErrMsg);
-       sqlite3_free(zErrMsg);
-   } else {
-       Serial.printf("Operation done successfully\n");
-   }
-   Serial.print(F("Time taken:"));
-   Serial.println(micros()-start);
-   return rc;
-}
+// char *zErrMsg = 0;
+// int db_exec(sqlite3 *db, const char *sql) {
+//    Serial.println(sql);
+//    long start = micros();
+//    int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+//    if (rc != SQLITE_OK) {
+//        Serial.printf("SQL error: %s\n", zErrMsg);
+//        sqlite3_free(zErrMsg);
+//    } else {
+//        Serial.printf("Operation done successfully\n");
+//    }
+//    Serial.print(F("Time taken:"));
+//    Serial.println(micros()-start);
+//    return rc;
+// }
 
 Db::Db() : db(NULL) 
 {
@@ -70,28 +70,96 @@ void Db::createDatabase()
             c0_weight_kg             INTEGER NOT NULL, \
             x1_weight_kg             INTEGER NOT NULL, \
             PRIMARY KEY('id'), \
-            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
         );", 
         NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
     // Create the c0_rising table 
-    rc = sqlite3_exec(db, "CREATE TABLE c0_rising (id INTEGER, samples blob NOT NULL)", 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE c0_rising (\
+            id      INTEGER   NOT NULL, \
+            samples blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
     // Create the c0_lowering table 
-    rc = sqlite3_exec(db, "CREATE TABLE c0_lowering (id INTEGER, samples blob NOT NULL)", 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE c0_lowering (\
+            id      INTEGER   NOT NULL, \
+            samples blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
     // Create the x1_rising table 
-    rc = sqlite3_exec(db, "CREATE TABLE x1_rising (id INTEGER, samples blob NOT NULL)", 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE x1_rising (\
+            id      INTEGER   NOT NULL, \
+            samples blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
     // Create the x1_lowering table 
-    rc = sqlite3_exec(db, "CREATE TABLE x1_lowering (id INTEGER, samples blob NOT NULL)", 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE x1_lowering (\
+            id      INTEGER   NOT NULL, \
+            samples blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the c0_low_speed_factor table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE c0_low_speed_factors (\
+            id      INTEGER   NOT NULL, \
+            factors blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the c0_high_speed_factor table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE c0_high_speed_factors (\
+            id      INTEGER   NOT NULL, \
+            factors blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the x1_low_speed_factor table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE x1_low_speed_factors (\
+            id      INTEGER   NOT NULL, \
+            factors blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
+    NULL, NULL, &errMsg);
+    ASSERT(rc == SQLITE_OK, errMsg);
+
+    // Create the x1_high_speed_factor table 
+    rc = sqlite3_exec(db, "\
+        CREATE TABLE x1_high_speed_factors (\
+            id      INTEGER   NOT NULL, \
+            factors blob NOT NULL, \
+            PRIMARY KEY('id'), \
+            FOREIGN KEY (id) REFERENCES buckets(id) ON DELETE CASCADE\
+        );", 
     NULL, NULL, &errMsg);
     ASSERT(rc == SQLITE_OK, errMsg);
 
@@ -194,13 +262,18 @@ void Db::listBuckets(LISTBUCKETSCALLBACK callback)
 {
     const String sql = String("SELECT id, name FROM buckets ORDER BY name ASC;");
     char* errMsg = NULL;
-    int rc = sqlite3_exec(db, sql.c_str(), [](void* data, int argc, char** argv, char** azColName)
-    {
-        // Create an instance of a bucket and return it
-        Bucket bucket(String(argv[0]).toInt(), argv[1]);
-        return ((LISTBUCKETSCALLBACK)data)(&bucket);
-    },
-    (void*)callback, &errMsg);
+    int rc = sqlite3_exec(
+        db, 
+        sql.c_str(), 
+        [](void* data, int argc, char** argv, char** azColName)
+            {
+                // Create an instance of a bucket and return it
+                Bucket bucket(String(argv[0]).toInt(), argv[1]);
+                return ((LISTBUCKETSCALLBACK)data)(&bucket);
+            },
+        (void*)callback, 
+        &errMsg
+    );
     ASSERT(rc == SQLITE_OK, errMsg);
 }
 
@@ -394,3 +467,124 @@ void Db::updateX1Lowering(const int id, const CalibrationSample* samples)
     int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
+
+// Curve 0 low speed factors
+boolean Db::c0LowSpeedFactorExists(const int id)
+{
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM c0_low_speed_factors WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
+}
+
+void Db::addC0LowSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO c0_low_speed_factors (id, factors) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+void Db::updateC0LowSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("UPDATE c0_low_speed_factors SET factors = ? WHERE id = ?");
+    stmt.bind(1, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+// Curve 0 high speed factors
+boolean Db::c0HighSpeedFactorExists(const int id)
+{
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM c0_high_speed_factors WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
+}
+
+void Db::addC0HighSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO c0_high_speed_factors (id, factors) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+void Db::updateC0HighSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("UPDATE c0_high_speed_factors SET factors = ? WHERE id = ?");
+    stmt.bind(1, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+// Curve X1 low speed factors
+boolean Db::x1LowSpeedFactorExists(const int id)
+{
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM x1_low_speed_factors WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
+}
+
+void Db::addX1LowSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO x1_low_speed_factors (id, factors) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+void Db::updateX1LowSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("UPDATE x1_low_speed_factors SET factors = ? WHERE id = ?");
+    stmt.bind(1, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+// Curve X1 high speed factors
+boolean Db::x1HighSpeedFactorExists(const int id)
+{
+    Statement stmt(db);
+    stmt.prepare("SELECT * FROM x1_high_speed_factors WHERE id = ?");
+    stmt.bind(1, id);
+    int rc = stmt.step();
+    return rc == SQLITE_ROW ? true : false;
+}
+
+void Db::addX1HighSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("INSERT INTO x1_high_speed_factors (id, factors) VALUES (?, ?)");
+    stmt.bind(1, id);
+    stmt.bind(2, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+
+void Db::updateX1HighSpeedFactor(const int id, const int* factors)
+{
+    Statement stmt(db);
+    stmt.prepare("UPDATE x1_high_speed_factors SET factors = ? WHERE id = ?");
+    stmt.bind(1, factors, sizeof(int) * MAX_CALIBRATION_SAMPLES);
+    stmt.bind(2, id);
+    int rc = stmt.step();
+    ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
+}
+

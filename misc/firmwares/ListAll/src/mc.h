@@ -27,12 +27,14 @@ class Android;
 typedef int (*LISTBUCKETSCALLBACK)(Bucket* bucket);
 
 // Errors
-typedef enum Result {
+typedef enum Result 
+{
     Succeeded = 1,
     Failed = 0,
     ObjectDoesNotExists = -1,
     ObjectAlreadyExists = -2
-} Result;
+} 
+Result;
 
 // Machine state
 class State
@@ -83,7 +85,8 @@ enum Seq {
 
 const int MAX_CALIBRATION_SAMPLES = 16;
 
-typedef struct LimitSettings {
+typedef struct LimitSettings 
+{
     int global_correction_factor;
     int min_angle_20x;
     int reset_angle_10x;
@@ -91,7 +94,8 @@ typedef struct LimitSettings {
     int max_angle_10x;
     int c0_weight_kg;
     int x1_weight_kg;
-} LimitSettings;
+} 
+LimitSettings;
 
 typedef struct CalibrationSample 
 {
@@ -155,6 +159,27 @@ public:
     boolean x1LoweringExists(const int id);
     void addX1Lowering(const int id, const CalibrationSample* samples);
     void updateX1Lowering(const int id, const CalibrationSample* samples);
+
+    // Curve 0 low speed factors
+    boolean c0LowSpeedFactorExists(const int id);
+    void addC0LowSpeedFactor(const int id, const int* factors);
+    void updateC0LowSpeedFactor(const int id, const int* factors);
+
+    // Curve 0 high speed factors
+    boolean c0HighSpeedFactorExists(const int id);
+    void addC0HighSpeedFactor(const int id, const int* factors);
+    void updateC0HighSpeedFactor(const int id, const int* factors);
+
+    // Curve x1 low speed factors
+    boolean x1LowSpeedFactorExists(const int id);
+    void addX1LowSpeedFactor(const int id, const int* factors);
+    void updateX1LowSpeedFactor(const int id, const int* factors);
+
+    // Curve x1 high speed factors
+    boolean x1HighSpeedFactorExists(const int id);
+    void addX1HighSpeedFactor(const int id, const int* factors);
+    void updateX1HighSpeedFactor(const int id, const int* factors);
+
 };
 
 // Statement wrapper
