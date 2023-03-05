@@ -43,7 +43,7 @@ void setup()
         samples[i] = 'a' + i % 26;
     repo.setC0Rising(id, (CalibrationSample*)samples);
     for (int i = 0; i < cch; i++)
-        samples[i] = 'b';
+        samples[i] = 'a';
     repo.setC0Rising(id, (CalibrationSample*)samples);
 
     // Test c0_lowering table and apis
@@ -51,8 +51,56 @@ void setup()
         samples[i] = 'a' + i % 26;
     repo.setC0Lowering(id, (CalibrationSample*)samples);
     for (int i = 0; i < cch; i++)
-        samples[i] = 'c';
+        samples[i] = 'b';
     repo.setC0Lowering(id, (CalibrationSample*)samples);
+
+    // Test x1_rising table and apis
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'a' + i % 26;
+    repo.setX1Rising(id, (CalibrationSample*)samples);
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'c';
+    repo.setX1Rising(id, (CalibrationSample*)samples);
+
+    // Test x1_lowering table and apis
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'a' + i % 26;
+    repo.setX1Lowering(id, (CalibrationSample*)samples);
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'd';
+    repo.setX1Lowering(id, (CalibrationSample*)samples);
+
+    // Test c0_low_speed_factors table and apis
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'a' + i % 26;
+    repo.setC0LowSpeedFactor(id, (int*)samples);
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'e';
+    repo.setC0LowSpeedFactor(id, (int*)samples);
+
+    // Test c0_high_speed_factors table and apis
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'a' + i % 26;
+    repo.setC0HighSpeedFactor(id, (int*)samples);
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'f';
+    repo.setC0HighSpeedFactor(id, (int*)samples);
+
+    // Test x1_low_speed_factors table and apis
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'a' + i % 26;
+    repo.setX1LowSpeedFactor(id, (int*)samples);
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'g';
+    repo.setX1LowSpeedFactor(id, (int*)samples);
+
+    // Test x1_high_speed_factors table and apis
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'a' + i % 26;
+    repo.setX1HighSpeedFactor(id, (int*)samples);
+    for (int i = 0; i < cch; i++)
+        samples[i] = 'h';
+    repo.setX1HighSpeedFactor(id, (int*)samples);
 
     // // Test limit settings
     // LimitSettings settings1 = {

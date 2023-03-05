@@ -29,9 +29,9 @@ void Statement::bind(int index, const void* blob, int cb)
     ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
 }
 
-void Statement::bind(int index, const char* text)
+void Statement::bind(int index, const String& text)
 {
-    int rc = sqlite3_bind_text(stmt, index, text, -1, SQLITE_STATIC);
+    int rc = sqlite3_bind_text(stmt, index, text.c_str(), -1, SQLITE_STATIC);
     ASSERT(rc == SQLITE_OK, sqlite3_errmsg(db));
 }
 

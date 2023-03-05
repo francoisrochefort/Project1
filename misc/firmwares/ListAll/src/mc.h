@@ -179,7 +179,6 @@ public:
     boolean x1HighSpeedFactorExists(const int id);
     void addX1HighSpeedFactor(const int id, const int* factors);
     void updateX1HighSpeedFactor(const int id, const int* factors);
-
 };
 
 // Statement wrapper
@@ -195,7 +194,7 @@ public:
     void prepare(const char* sql);
     void bind(int index, int value);
     void bind(int index, const void* blob, int cb);
-    void bind(int index, const char* text);
+    void bind(int index, const String& text);
 
     int getColumnInt(int index);
 
@@ -226,6 +225,11 @@ public:
     Result setC0Lowering(const int id, const CalibrationSample* samples);
     Result setX1Rising(const int id, const CalibrationSample* samples);
     Result setX1Lowering(const int id, const CalibrationSample* samples);
+
+    Result setC0LowSpeedFactor(const int id, const int* factors);
+    Result setC0HighSpeedFactor(const int id, const int* factors);
+    Result setX1LowSpeedFactor(const int id, const int* factors);
+    Result setX1HighSpeedFactor(const int id, const int* factors);
 
     Result deleteBucket(const int id);
     // int copyBucket(const int id, const String& name);
@@ -307,35 +311,3 @@ extern Db db;
 extern Android android;
 
 #endif
-
-
-/*class Bucket {
-
-public:
-
-    int id;
-    String name;
-
-    int globalCorrectionFactor;
-    int minAngle20x;
-    int resetAngle10x;
-    int addAngle10x;
-    int maxAngle10x;
-    int curve0WeightKg;
-    int curveX1WeightKg;
-
-    CalibrationSample curve0Rising[MAX_CALIBRATION_SAMPLES];
-    CalibrationSample curve0Lowering[MAX_CALIBRATION_SAMPLES];
-    CalibrationSample curveX1Rising[MAX_CALIBRATION_SAMPLES];
-    CalibrationSample curveX1Lowering[MAX_CALIBRATION_SAMPLES];
-
-    int lowSpeedFactorCurve0[MAX_CALIBRATION_SAMPLES];
-    int highSpeedFactorCurve0[MAX_CALIBRATION_SAMPLES];
-    int lowSpeedFactorCurveX1[MAX_CALIBRATION_SAMPLES];
-    int highSpeedFactorCurveX1[MAX_CALIBRATION_SAMPLES];
-
-    Bucket(const int id, char* name);
-    int getId();
-    String getName();
-    virtual ~Bucket();
-};*/

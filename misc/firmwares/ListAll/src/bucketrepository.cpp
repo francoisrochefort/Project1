@@ -166,6 +166,106 @@ Result BucketRepository::setX1Lowering(const int id, const CalibrationSample* sa
     return Succeeded;
 }
 
+Result BucketRepository::setC0LowSpeedFactor(const int id, const int* factors)
+{
+    // Check if the bucket exists
+    if (!db.bucketExists(id)) {
+
+        // Return the error
+        return ObjectDoesNotExists;
+    }
+
+    // Add or update factors accordingly
+    if (!db.c0LowSpeedFactorExists(id)) {
+
+        // Insert bucket calibration
+        Serial.println("j'ajoute les ti-factors c0_low_speed_factor");
+        db.addC0LowSpeedFactor(id, factors);
+    }  
+    else {
+
+        // Update bucket calibration
+        Serial.println("j'update les ti-factors  c0_low_speed_factor");
+        db.updateC0LowSpeedFactor(id, factors);
+    }
+    return Succeeded;
+}
+
+Result BucketRepository::setC0HighSpeedFactor(const int id, const int* factors)
+{
+    // Check if the bucket exists
+    if (!db.bucketExists(id)) {
+
+        // Return the error
+        return ObjectDoesNotExists;
+    }
+
+    // Add or update factors accordingly
+    if (!db.c0HighSpeedFactorExists(id)) {
+
+        // Insert bucket calibration
+        Serial.println("j'ajoute les ti-factors c0_high_speed_factor");
+        db.addC0HighSpeedFactor(id, factors);
+    }  
+    else {
+
+        // Update bucket calibration
+        Serial.println("j'update les ti-factors  c0_high_speed_factor");
+        db.updateC0HighSpeedFactor(id, factors);
+    }
+    return Succeeded;
+}
+
+Result BucketRepository::setX1LowSpeedFactor(const int id, const int* factors)
+{
+    // Check if the bucket exists
+    if (!db.bucketExists(id)) {
+
+        // Return the error
+        return ObjectDoesNotExists;
+    }
+
+    // Add or update factors accordingly
+    if (!db.x1LowSpeedFactorExists(id)) {
+
+        // Insert bucket calibration
+        Serial.println("j'ajoute les ti-factors x1_high_speed_factor");
+        db.addX1LowSpeedFactor(id, factors);
+    }  
+    else {
+
+        // Update bucket calibration
+        Serial.println("j'update les ti-factors  x1_high_speed_factor");
+        db.updateX1LowSpeedFactor(id, factors);
+    }
+    return Succeeded;
+}
+
+Result BucketRepository::setX1HighSpeedFactor(const int id, const int* factors)
+{
+    // Check if the bucket exists
+    if (!db.bucketExists(id)) {
+
+        // Return the error
+        return ObjectDoesNotExists;
+    }
+
+    // Add or update factors accordingly
+    if (!db.x1HighSpeedFactorExists(id)) {
+
+        // Insert bucket calibration
+        Serial.println("j'ajoute les ti-factors x1_high_speed_factor");
+        db.addX1HighSpeedFactor(id, factors);
+    }  
+    else {
+
+        // Update bucket calibration
+        Serial.println("j'update les ti-factors  x1_high_speed_factor");
+        db.updateX1HighSpeedFactor(id, factors);
+    }
+    return Succeeded;
+}
+
 Result BucketRepository::deleteBucket(const int id)
 {
     // Check if the bucket exists

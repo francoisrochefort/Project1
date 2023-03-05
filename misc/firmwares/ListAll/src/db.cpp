@@ -216,7 +216,7 @@ void Db::addBucket(const int id, const String& name)
     Statement stmt(db);
     stmt.prepare("INSERT INTO buckets (id, name) VALUES (?, ?)");
     stmt.bind(1, id);
-    stmt.bind(2, name.c_str());
+    stmt.bind(2, name);
     int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
 }
@@ -225,7 +225,7 @@ int Db::getBucketId(const String& name)
 {
     Statement stmt(db);
     stmt.prepare("SELECT id FROM buckets WHERE name = ?");
-    stmt.bind(1, name.c_str());
+    stmt.bind(1, name);
     int rc = stmt.step();
     return rc == SQLITE_DONE ? NoRecordFound : stmt.getColumnInt(1);
 }
@@ -234,7 +234,7 @@ void Db::updateBucket(const int id, const String& name)
 {
     Statement stmt(db);
     stmt.prepare("UPDATE buckets SET name = ? WHERE id = ?");
-    stmt.bind(1, name.c_str());
+    stmt.bind(1, name);
     stmt.bind(2, id);
     int rc = stmt.step();
     ASSERT(rc == SQLITE_DONE, sqlite3_errmsg(db));
