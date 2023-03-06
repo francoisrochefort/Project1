@@ -63,6 +63,10 @@ class AwakeState : public State
     void onDeleteBucket(const int id);
     void onCopyBucket(const int id, const String& name);
     void onListBuckets();
+    void onQuery(const String& sql);
+
+    // Helper callback
+    static int callback(void* data, int argc, char** argv, char** azColName);
 
 public:
 
@@ -123,6 +127,9 @@ public:
     // Database
     void open(boolean createDatabase); 
     void createDatabase();
+
+    // Debug
+    int query(const char* sql, sqlite3_callback callback, void* data, char** errMsg);
 
     // Sequences
     int getNextVal(Seq seq);
@@ -236,7 +243,8 @@ public:
     void listAll(LISTBUCKETSCALLBACK callback);
 };
 
-enum class Cmd {
+enum class Cmd 
+{
     Undefined,
     Awake,
     AddBucket,
@@ -244,12 +252,13 @@ enum class Cmd {
     DeleteBucket,
     CopyBucket,
     SelectBucket,
-    ListBuckets
+    ListBuckets,
+    Query
 };
 
 class Android {
 
-    // Messages
+    // Events
     static constexpr const char* ON_AWAKE           = "EV01";
     static constexpr const char* ON_ADD_BUCKET      = "EV02";
     static constexpr const char* ON_UPDATE_BUCKET   = "EV03";
@@ -257,6 +266,7 @@ class Android {
     static constexpr const char* ON_COPY_BUCKET     = "EV05";
     static constexpr const char* ON_SELECT_BUCKET   = "EV06";
     static constexpr const char* ON_NEXT_BUCKET     = "EV07";
+    static constexpr const char* ON_QUERY_ROW       = "EV08";
     static constexpr const char* ON_CREATE_DATABASE = "EV98";
     static constexpr const char* ON_ERROR           = "EV99";
 
@@ -268,6 +278,7 @@ class Android {
     static constexpr const char* COPY_BUCKET   = "CM05";
     static constexpr const char* SELECT_BUCKET = "CM06";
     static constexpr const char* LIST_BUCKETS  = "CM07";
+    static constexpr const char* QUERY  = "CM08";
 
 public:
 
@@ -294,6 +305,7 @@ public:
     void onDeleteBucket(int bucketId);
     void onCopyBucket(int bucketId);
     void onNextBucket(Bucket* Bucket);
+    void onNextRow(const String& row);
     void onCreateDatabase();
     void onError(const String& msg);
     void onError(const char* msg);

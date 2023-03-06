@@ -1,5 +1,32 @@
 #include <mc.h>
 
+// const char* data = "Callback function called";
+// static int callback(void *data, int argc, char **argv, char **azColName){
+//    int i;
+//    Serial.printf("%s: ", (const char*)data);
+//    for (i = 0; i<argc; i++){
+//        Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+//    }
+//    Serial.printf("\n");
+//    return 0;
+// }
+
+// char *zErrMsg = 0;
+// int db_exec(sqlite3 *db, const char *sql) {
+//    Serial.println(sql);
+//    long start = micros();
+//    int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+//    if (rc != SQLITE_OK) {
+//        Serial.printf("SQL error: %s\n", zErrMsg);
+//        sqlite3_free(zErrMsg);
+//    } else {
+//        Serial.printf("Operation done successfully\n");
+//    }
+//    Serial.print(F("Time taken:"));
+//    Serial.println(micros()-start);
+//    return rc;
+// }
+
 void AwakeState::AwakeState::onAddBucket(const String& name)
 {
     // Insert the new bucket
@@ -73,6 +100,32 @@ void AwakeState::onListBuckets()
     );
 }
 
+void AwakeState::onQuery(const String& sql)
+{
+    Serial.println();
+    Serial.println();
+
+    // Query the database
+    char* errMsg = NULL;
+    int rc = db.query(sql.c_str(), callback, (void*)this, &errMsg);
+    if (rc != SQLITE_OK) {
+
+        // Return the error
+        android.onError(errMsg);
+        sqlite3_free(errMsg);
+    }
+}
+
+int AwakeState::callback(void* data, int argc, char** argv, char** azColName)
+{
+    // Print out query result
+    AwakeState* awakeState = (AwakeState*)data;
+    for (int i = 0; i < argc; i++){
+        Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    return 0;
+}
+
 void AwakeState::setContext(Context* context) 
 {
     currentContext = context;
@@ -102,6 +155,9 @@ void AwakeState::doEvents()
             break;
         case Cmd::ListBuckets:
             onListBuckets();
+            break;
+        case Cmd::Query:
+            onQuery(msg.getStringParam());
             break;
         default:
             break;

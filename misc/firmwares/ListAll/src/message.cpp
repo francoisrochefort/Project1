@@ -17,6 +17,7 @@ Cmd Android::Message::getCmd()
     else if (cmd == Android::COPY_BUCKET) return Cmd::CopyBucket;
     else if (cmd == Android::SELECT_BUCKET) return Cmd::SelectBucket;
     else if (cmd == Android::LIST_BUCKETS) return Cmd::ListBuckets;
+    else if (cmd == Android::QUERY) return Cmd::Query;
     else return Cmd::Undefined;
 }
 

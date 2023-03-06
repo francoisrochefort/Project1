@@ -1,32 +1,5 @@
 #include <mc.h>
 
-// const char* data = "Callback function called";
-// static int callback(void *data, int argc, char **argv, char **azColName){
-//    int i;
-//    Serial.printf("%s: ", (const char*)data);
-//    for (i = 0; i<argc; i++){
-//        Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-//    }
-//    Serial.printf("\n");
-//    return 0;
-// }
-
-// char *zErrMsg = 0;
-// int db_exec(sqlite3 *db, const char *sql) {
-//    Serial.println(sql);
-//    long start = micros();
-//    int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-//    if (rc != SQLITE_OK) {
-//        Serial.printf("SQL error: %s\n", zErrMsg);
-//        sqlite3_free(zErrMsg);
-//    } else {
-//        Serial.printf("Operation done successfully\n");
-//    }
-//    Serial.print(F("Time taken:"));
-//    Serial.println(micros()-start);
-//    return rc;
-// }
-
 Db::Db() : db(NULL) 
 {
 }
@@ -190,6 +163,11 @@ void Db::createDatabase()
 
     // Send the event
     android.onCreateDatabase();
+}
+
+int Db::query(const char* sql, sqlite3_callback callback, void* data, char** errMsg)
+{
+   return sqlite3_exec(db, sql, callback, data, errMsg);
 }
 
 int Db::getNextVal(Seq seq)
