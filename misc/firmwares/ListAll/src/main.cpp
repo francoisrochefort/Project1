@@ -39,9 +39,8 @@ void setup()
         request->send(SPIFFS, "/index.html", String(), false, processor);
     });
     server.on("/buckets", HTTP_GET, [](AsyncWebServerRequest *request){
-        // String content = "[{\"name\": \"Bucket #1\"}]";
+         String content = "[{\"name\": \"Bucket #1\"}, {\"name\": \"Bucket #777\"}, {\"name\": \"Bucket #69\"}]";
 
-        String buckets = "[";
         BucketRepository repo;
         repo.listAll([](Bucket* bucket) 
             {
@@ -50,8 +49,7 @@ void setup()
                 return 0;
             }
         );
-        buckets += "]";
-        request->send(200, "text/html", buckets);
+        request->send(200, "text/html", content);
     });
     server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/script.js", String(), false, processor);
