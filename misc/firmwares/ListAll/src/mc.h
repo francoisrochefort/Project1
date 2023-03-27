@@ -6,6 +6,8 @@
 #include <sqlite3.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "WiFi.h"
+#include "ESPAsyncWebServer.h"
 
 // Serial port settings
 #define BAUD_RATE 115200
